@@ -1,0 +1,13 @@
+{
+    "files.associations": {
+        "pipex.h": "c",
+        "unistd.h": "c",
+        "errno.h": "c",
+        "*.tcc": "c",
+        "concepts": "c",
+        "memory_resource": "c",
+        "new": "c",
+        "functional": "c",
+        "stdio.h": "c"
+    }
+}
