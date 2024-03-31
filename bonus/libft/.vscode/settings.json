@@ -1,0 +1,12 @@
+{
+    "files.associations": {
+        "stdio.h": "c",
+        "stdlib.h": "c",
+        "ft_put": "c",
+        "random": "c",
+        "fcntl.h": "c",
+        "unistd.h": "c",
+        "errno.h": "c",
+        "ft_libft.h": "c"
+    }
+}

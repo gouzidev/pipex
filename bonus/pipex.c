@@ -52,7 +52,6 @@ int	**pipes_arr(char **av, int ac)
 	dup2(outfile_fd, pipes[i][1]);
 	close(outfile_fd);
 	i++;
-	printf("here\n");
 	init_pipe(&pipes[i]);
 	return pipes;
 }
@@ -61,7 +60,6 @@ int	**pipes_arr(char **av, int ac)
 
 int main(int ac, char *av[], char *env[])
 {
-
     int id;
 	t_node	*head;
 	t_node	*curr;
