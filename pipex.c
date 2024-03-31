@@ -1,8 +1,6 @@
 #include "pipex.h"
 
-
-
-t_node *parse_cmds(char **av, int ac)
+t_node *parse_cmds_linked_list(char **av, int ac)
 {
 	t_node *head;
 	t_node *curr;
@@ -22,21 +20,60 @@ t_node *parse_cmds(char **av, int ac)
 	return head;
 }
 
-int is_path(t_node	*command)
+void init_pipe(int	**pip)
 {
-	return (command->cmd[0] == '/' || command->cmd[0] == '.');
+	(*pip) = malloc(sizeof(int) * 2);
+	(*pip)[0] = -1;
+	(*pip)[1] = -1;
 }
+
+int	**pipes_arr(char **av, int ac)
+{
+	int	infile_fd = open(av[1], O_RDONLY);
+	int	outfile_fd = open(av[ac - 1], O_WRONLY);
+	int	**pipes;
+	int	i;
+
+	pipes = malloc((sizeof(int *)) * (ac));
+	init_pipe(&pipes[0]);
+	pipe(pipes[0]);
+	dup2(infile_fd, pipes[0][0]);
+	close(infile_fd);
+
+	i = 1;
+	while (i < ac)
+	{
+		init_pipe(&pipes[i]);
+		pipe(pipes[i]);
+		i++;
+	}
+	init_pipe(&pipes[i]);
+	pipe(pipes[i]);
+	dup2(outfile_fd, pipes[i][1]);
+	close(outfile_fd);
+	i++;
+	printf("here\n");
+	init_pipe(&pipes[i]);
+	return pipes;
+}
+
+
 
 int main(int ac, char *av[], char *env[])
 {
+
     int id;
 	t_node	*head;
 	t_node	*curr;
 	char *path;
     char **cmd_args;
 	int status;
-    int i = 0;
-	curr = parse_cmds(av, ac);
+    int **fds_arr;
+	int i = 0;
+	curr = parse_cmds_linked_list(av, ac);
+	int	infile_fd = open(av[1], O_RDONLY);
+	int	outfile_fd = open(av[ac - 1], O_WRONLY);
+	fds_arr = pipes_arr(av, ac);
 	while (curr)
 	{
 	    id = fork();

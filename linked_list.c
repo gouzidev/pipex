@@ -8,6 +8,7 @@ t_node *new (char *cmd)
 	if (new_node == 0)
 		return (0);
 	new_node->next = NULL;
+	new_node->prev = NULL;
 	new_node->cmd = cmd;
 	return (new_node);
 }
@@ -24,10 +25,13 @@ void	push(t_node **head, t_node *new)
         while (curr->next)
             curr = curr->next;
         curr->next = new;
+		new->prev = curr;
     }
     else
     {
         new->next = *head;
+		if (*head)
+			(*head)->prev = new;
         *head = new;
     }
 }

@@ -10,6 +10,7 @@
 #include <sys/wait.h>
 #include <sys/types.h>
 #include <errno.h>
+#include "libft/libft.h"
 
 void exit_print(char *msg);
 static int	len(char const *s1);
@@ -26,7 +27,9 @@ char	**ft_split(char const *s, char c);
 
 typedef struct s_node {
     struct s_node *next;
+    struct s_node *prev;
     char *cmd;
+    int fd[2];
 }   t_node;
 
 
@@ -40,5 +43,12 @@ t_node	*before_last(t_node *head);
 t_node	*last(t_node *head);
 int	exists(t_node *head, t_node *node);
 void	clear(t_node **head);
+
+
+/* path.c */
+int is_path(t_node	*command);
+char *check_env_path(char	*env[]);
+char	*make_path(char	*path, char	*cmd);
+char *find_cmd_path(char	*env_path, char *cmd);
 
 #endif
