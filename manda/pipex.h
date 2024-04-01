@@ -45,9 +45,8 @@ int	exists(t_node *head, t_node *node);
 void	clear(t_node **head);
 
 
-/* path.c */
-int is_path(t_node	*command);
-char *check_env_path(char	*env[]);
+int is_path(char	*cmd);
+char *get_env_path(char	*env[]);
 char	*make_path(char	*path, char	*cmd);
 char *find_cmd_path(char	*env_path, char *cmd);
 

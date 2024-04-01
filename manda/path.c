@@ -1,11 +1,11 @@
 #include "pipex.h"
 
-int is_path(t_node	*command)
+int is_path(char	*cmd)
 {
-	return (command->cmd[0] == '/' || command->cmd[0] == '.');
+	return (cmd[0] == '/' || cmd[0] == '.');
 }
 
-char *check_env_path(char	*env[])
+char *get_env_path(char	*env[])
 {
 	int	i;
 
@@ -13,7 +13,7 @@ char *check_env_path(char	*env[])
 	while (env[i])
 	{
 		if (ft_strncmp("PATH=", env[i], 5) == 0)
-			return env[i];
+			return env[i] + 5;
 		i++;
 	}
 	return (NULL);
@@ -48,7 +48,7 @@ char *find_cmd_path(char	*env_path, char *cmd)
 		path = make_path(paths[i], cmd);
 		if (path == NULL)
 			perror("malloc");
-		if (access(path, X_OK))
+		if (access(path, X_OK) == 0)
 			return path;
 		free(path);
 		i++;
