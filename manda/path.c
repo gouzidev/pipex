@@ -2,7 +2,7 @@
 
 int is_path(char	*cmd)
 {
-	return (cmd[0] == '/' || cmd[0] == '.');
+	return (cmd[0] == '/' || (cmd[0] == '.' && cmd[1] == '/'));
 }
 
 char *get_env_path(char	*env[])
