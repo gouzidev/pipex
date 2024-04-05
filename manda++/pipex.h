@@ -11,6 +11,43 @@
 #include <sys/types.h>
 #include <errno.h>
 
+typedef struct s_pipex
+{
+    int **pipes;
+    int n_cmds;
+    int n_pips;
+    pid_t *pids;
+    int infile;
+    int outfile;
+    int infile_status;
+    int outfile_status;
+    char **cmds;
+    char **env;
+    char *env_path;
+    char *cmd_path;
+    char **cmd_args;
+    int status;
+
+}  t_pipex;
+
+/* prase.c */
+char **parse_commands(int  ac, char *av[]);
+
+/* helper1.c */
+void clean_up(t_pipex *pipex);
+void setup(t_pipex *pipex, int  ac, char   *av[], char *env[]);
+void freee(t_pipex *pipex);
+void handle_status(t_pipex *pipex, int  ac, char *av[]);
+
+/* str.c */
+int ft_strlen(char *str);
+char *ft_strdup(char *str);
+
+/* pipe.c */
+int** init_pipes(int n_cmds);
+void close_allthe_pipes(int **pipes);
+void close_unused_pipes(int **pipes, int process_index, int n_pips);
+
 void exit_print(char *msg);
 static int	len(char const *s1);
 char	*ft_strjoin(char const *s1, char const *s2);
