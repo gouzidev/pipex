@@ -1,5 +1,5 @@
-#ifndef PIPEX
-#define PIPEX
+#ifndef PIPEX_H
+#define PIPEX_H
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -36,49 +36,41 @@ typedef struct s_pipex
 }  t_pipex;
 
 
+/* split.c */
+int	len(char const *s1);
+int	count_words(char const *s1, char c);
+char	**handle_null_malloc(char const *s, char c, t_node **gc);
+char	**ft_split(char const *s, char c, t_node **gc);
+
+
 /* prase.c */
 char **parse_commands(t_pipex *pipex, t_node **gc, int  ac, char *av[]);
 
 /* helper1.c */
-void clean_up(t_pipex *pipex);
+void parent(t_pipex *pipex, t_node **gc);
 void setup(t_pipex *pipex, t_node **gc, int  ac, char   *av[], char *env[]);
 // void freee(t_pipex *pipex);
 void handle_status(t_pipex *pipex, int  ac, char *av[]);
-void ft_free_data(void **data);
-void ft_free_node(t_node **node);
 
 /* str.c */
 int ft_strlen(char *str);
 char *ft_strdup(char *str, t_node **gc);
+char	*ft_strjoin(char const *s1, char const *s2);
+char	*ft_substr(char const *s, unsigned int start, size_t len, t_node **gc);
+int ft_strncmp  (const char *s1, const char *s2, size_t n);
 
 /* pipe.c */
 int** init_pipes(t_pipex *pipex, t_node **gc, int n_cmds);
 void close_allthe_pipes(int **pipes);
 void close_unused_pipes(int **pipes, int process_index, int n_pips);
 
-void exit_print(char *msg);
-static int	len(char const *s1);
-char	*ft_strjoin(char const *s1, char const *s2);
-char	*ft_substr(char const *s, unsigned int start, size_t len, t_node **gc);
-// static char	**free_all(char **res, int w);
-static int	count_words(char const *s1, char c);
-static char	**handle_null_malloc(char const *s, char c, t_node **gc);
-char	**ft_split(char const *s, char c, t_node **gc);
-
-
-int ft_strncmp  (const char *s1, const char *s2, size_t n);
-
-
-
 /* gc.c */
-
 void *gc_malloc (t_node **gc, size_t size);
 void gc_push(t_node **gc, void *data);
 t_node* gc_init();
 void gc_clear(t_node **gc);
 
-
-
+/* path.c */
 int is_path(char	*cmd);
 char *get_env_path(char	*env[]);
 char	*make_path(char	*path, char	*cmd, t_node **gc);

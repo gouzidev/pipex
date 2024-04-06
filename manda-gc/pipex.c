@@ -1,15 +1,46 @@
 #include "pipex.h"
 
-// void free_split(char **split)
-// {
-//     int i;
+void handle_dup(t_pipex *pipex, int i)
+{
+    if (i == 0)
+    {
+        dup2(pipex->infile, STDIN_FILENO); // Redirect stdin from pipex->infile
+        dup2(pipex->pipes[i][1], STDOUT_FILENO); // Redirect stdout to pipe1
+    }
+    else if (i != pipex->n_cmds - 1)
+    {
+        dup2(pipex->pipes[i - 1][0], STDIN_FILENO); // Redirect stdin from pipe2
+        dup2(pipex->pipes[i][1], STDOUT_FILENO); // Redirect stdout to pipe1
+    }
+    else
+    {
+        dup2(pipex->outfile, STDOUT_FILENO); // Redirect stdout to pipex->outfile
+        dup2(pipex->pipes[i - 1][0], STDIN_FILENO); // Redirect stdin from pipe2
+    }
+}
 
-//     i = 0;
-//     while (split[i])
-//         free(split[i++]);
-//     free(split);
-// }
+void handle_cmd_path(t_pipex *pipex, int i, t_node **gc, char **cmd_args)
+{
+    handle_dup(pipex, i);
+    execve(cmd_args[0], cmd_args, pipex->env);
+    printf("no such file or directory: %s\n", cmd_args[0]);
+    gc_clear(gc);
+    exit(127);
+}
 
+void handle_unset_path(t_node **gc)
+{
+    perror("path was not set\n");
+    gc_clear(gc);
+    exit(127);
+}
+
+void handle_unkown_cmd(char **cmd_args, t_node **gc)
+{
+    printf("command not found: %s\n", cmd_args[0]);
+    gc_clear(gc);
+    exit(127);
+}
 
 void execute_cmd(t_pipex *pipex, int i, int flag, t_node **gc)
 {
@@ -25,69 +56,40 @@ void execute_cmd(t_pipex *pipex, int i, int flag, t_node **gc)
             cmd_path = find_cmd_path(env_path, cmd_args[0], gc);
             if (cmd_path)
             {
-                if (flag == 0)
-                {
-                    dup2(pipex->infile, STDIN_FILENO); // Redirect stdin from pipex->infile
-                    dup2(pipex->pipes[i][1], STDOUT_FILENO); // Redirect stdout to pipe1
-                }
-                else if (flag == 1)
-                {
-                    dup2(pipex->pipes[i - 1][0], STDIN_FILENO); // Redirect stdin from pipe2
-                    dup2(pipex->pipes[i][1], STDOUT_FILENO); // Redirect stdout to pipe1
-                }
-                else
-                {
-                    dup2(pipex->outfile, STDOUT_FILENO); // Redirect stdout to pipex->outfile
-                    dup2(pipex->pipes[i - 1][0], STDIN_FILENO); // Redirect stdin from pipe2
-                }
+                handle_dup(pipex, i);
                 execve(cmd_path, cmd_args, pipex->env);
-
             }
             else
-            {
-                printf("command not found: %s\n", cmd_args[0]);
-                gc_clear(gc);
-                if (flag == 2)
-                {
-                    exit(127);
-                }
-            }
+                handle_unkown_cmd(cmd_args, gc);
         }
-        perror("path was not set\n");
-        gc_clear(gc);
-        // pipex->status = 127;
-        exit(127);
+        else
+            handle_unset_path(gc);
+    }
+    else
+        handle_cmd_path(pipex, i, gc, cmd_args);
+}
+
+void child(t_pipex *pipex, int i, t_node **gc)
+{
+    close_unused_pipes(pipex->pipes, i, pipex->n_pips);
+    if (i == 0) // first child
+    {
+        close(pipex->outfile);
+    }
+    else if (i == pipex->n_cmds - 1) // last child
+    {
+        if (pipex->infile != -1)
+            close(pipex->infile);
     }
     else
     {
-        execve(cmd_args[0], cmd_args, pipex->env);
-        printf("no such file or directory: %s\n", cmd_args[0]);
-        gc_clear(gc);
-        // pipex->status = 127;
-        exit(127);
+        if (pipex->infile != -1)
+            close(pipex->infile);
+        if (pipex->outfile != -1)
+            close(pipex->outfile);
     }
-}
-
-void childi(t_pipex *pipex, int i, t_node **gc)
-{
-    if (pipex->infile != -1)
-        close(pipex->infile);
-    if (pipex->outfile != -1)
-        close(pipex->outfile);
-    execute_cmd(pipex, i, 1, gc);
-}
-
-void child1(t_pipex *pipex, int i, t_node **gc)
-{
-    close(pipex->outfile);
-    execute_cmd(pipex, i, 0, gc);
-}
-
-void childn(t_pipex *pipex, int i, t_node **gc)
-{
-    if (pipex->infile != -1)
-        close(pipex->infile);
-    execute_cmd(pipex, i, 2, gc);
+    handle_dup(pipex, i);
+    execute_cmd(pipex, i, i, gc);
 }
 
 int main(int ac, char *av[], char *env[])
@@ -101,27 +103,18 @@ int main(int ac, char *av[], char *env[])
         perror("usage: ./pipex infile cmd1 cmd2 outfile");
     gc = gc_init();
     setup(&pipex, &gc, ac, av, env);
-
     i = 0;
     while (i < pipex.n_cmds)
     {
         id = fork();
-        if (id == 0) {
-            close_unused_pipes(pipex.pipes, i, pipex.n_pips);
-            if (pipex.infile_status > 0 && i == 0)
-                child1(&pipex, i, &gc);
-            if (pipex.infile_status > 0 && i < pipex.n_cmds - 1)
-                childi(&pipex, i, &gc);
-            else
-                childn(&pipex, i, &gc);
-        }
+        if (id == 0)
+            child(&pipex, i, &gc);
         if (id == -1)
-            perror("fork");
+            (gc_clear(&gc), perror("fork"), exit(1));
         else
             pipex.pids[i] = id;
         i++;
     }
-    clean_up(&pipex);
-    gc_clear(&gc);
+    parent(&pipex, &gc);
     return 0;
 }

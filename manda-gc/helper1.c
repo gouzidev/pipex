@@ -1,6 +1,6 @@
 #include "pipex.h"
 
-void clean_up(t_pipex *pipex)
+void parent(t_pipex *pipex, t_node **gc)
 {
     int i;
     int status;
@@ -17,10 +17,12 @@ void clean_up(t_pipex *pipex)
         {
             perror("waitpid");
             printf("failed waiting %d\n", pipex->status);
-            exit(EXIT_FAILURE);
+            gc_clear(gc);
+            exit(-5);
         }
         i++;
     }
+    gc_clear(gc);
 }
 
 void setup(t_pipex *pipex, t_node **gc, int  ac, char   *av[], char *env[])
@@ -42,39 +44,6 @@ void setup(t_pipex *pipex, t_node **gc, int  ac, char   *av[], char *env[])
 
     handle_status(pipex, ac, av);
 
-}
-
-// void freee(t_pipex *pipex)
-// {
-//     int i;
-
-//     i = 0;
-//     while (pipex->pipes[i])
-//         free(pipex->pipes[i++]);
-//     free(pipex->pipes);
-//     i = 0;
-//     while (pipex->cmds[i])
-//         free(pipex->cmds[i++]);
-//     free(pipex->cmds);
-//     free(pipex->pids);
-// }
-
-void ft_free_data(void **data)
-{
-    if (*data)
-    {
-        free(*data);
-        *data = NULL;
-    }
-}
-
-void ft_free_node(t_node **node)
-{
-    if (*node)
-    {
-        free(*node);
-        *node = NULL;
-    }
 }
 
 void handle_status(t_pipex *pipex, int  ac, char *av[])
