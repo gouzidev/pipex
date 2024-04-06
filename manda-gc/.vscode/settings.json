@@ -1,0 +1,12 @@
+{
+    "files.associations": {
+        "ostream": "c",
+        "pipex.h": "c",
+        "unistd.h": "c",
+        "*.tcc": "c",
+        "concepts": "c",
+        "memory_resource": "c",
+        "new": "c",
+        "functional": "c"
+    }
+}
