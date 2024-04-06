@@ -20,6 +20,14 @@ void parent(t_pipex *pipex, t_node **gc)
             gc_clear(gc);
             exit(-5);
         }
+        if (WIFEXITED(status)) { // Check if the child terminated normally
+            int child_exit_status = WEXITSTATUS(status); // Get the child's exit status
+            if (child_exit_status != 0)
+            {
+                printf("child %d failed with status %d\n", i, child_exit_status);
+                pipex->status = child_exit_status;
+            }
+        }
         i++;
     }
     gc_clear(gc);
@@ -40,6 +48,7 @@ void setup(t_pipex *pipex, t_node **gc, int  ac, char   *av[], char *env[])
     pipex->pipes = init_pipes(pipex, gc, pipex->n_cmds);
 
     pipex->infile = open(av[1], O_RDONLY); // Open the file for reading
+
     pipex->outfile = open(av[ac - 1], O_WRONLY | O_CREAT, 0644); // Open the file for writing
 
     handle_status(pipex, ac, av);

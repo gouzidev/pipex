@@ -25,24 +25,28 @@ void handle_cmd_path(t_pipex *pipex, int i, t_node **gc, char **cmd_args)
     execve(cmd_args[0], cmd_args, pipex->env);
     printf("no such file or directory: %s\n", cmd_args[0]);
     gc_clear(gc);
-    exit(127);
+    if (i == pipex->n_cmds - 1)
+        exit(5); // last path to cmd not found
+    exit(6); // path to cmd not found
 }
 
 void handle_unset_path(t_node **gc)
 {
     perror("path was not set\n");
     gc_clear(gc);
-    exit(127);
+    exit(3); // unset path
 }
 
-void handle_unkown_cmd(char **cmd_args, t_node **gc)
+void handle_unkown_cmd(t_pipex *pipex, char **cmd_args, int i, t_node **gc)
 {
     printf("command not found: %s\n", cmd_args[0]);
     gc_clear(gc);
-    exit(127);
+    if (i == pipex->n_cmds - 1)
+        exit(2); // last cmd not found
+    exit(10); // cmd not found
 }
 
-void execute_cmd(t_pipex *pipex, int i, int flag, t_node **gc)
+void execute_cmd(t_pipex *pipex, int i, t_node **gc)
 {
     char **cmd_args;
     char *env_path;
@@ -56,11 +60,15 @@ void execute_cmd(t_pipex *pipex, int i, int flag, t_node **gc)
             cmd_path = find_cmd_path(env_path, cmd_args[0], gc);
             if (cmd_path)
             {
-                handle_dup(pipex, i);
-                execve(cmd_path, cmd_args, pipex->env);
+                if (pipex->status == 0)
+                {
+                    handle_dup(pipex, i);
+                    execve(cmd_path, cmd_args, pipex->env);
+                    exit(1); // cmd has problem
+                }
             }
             else
-                handle_unkown_cmd(cmd_args, gc);
+                handle_unkown_cmd(pipex, cmd_args, i, gc);
         }
         else
             handle_unset_path(gc);
@@ -88,8 +96,7 @@ void child(t_pipex *pipex, int i, t_node **gc)
         if (pipex->outfile != -1)
             close(pipex->outfile);
     }
-    handle_dup(pipex, i);
-    execute_cmd(pipex, i, i, gc);
+    execute_cmd(pipex, i, gc);
 }
 
 int main(int ac, char *av[], char *env[])
