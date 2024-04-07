@@ -1,32 +1,5 @@
 #include "pipex.h"
 
-void parent(t_pipex *pipex, t_node **gc)
-{
-    int i;
-    int status;
-    pid_t terminated_pid;
-
-    if (pipex->outfile != -1)
-        close(pipex->outfile);
-    close_allthe_pipes(pipex->pipes);
-    i = 0;
-    while (i < pipex->n_cmds)
-    {
-        terminated_pid = waitpid(pipex->pids[i], &status, 0);
-        if (terminated_pid < 0)
-        {
-            perror("waitpid");
-            gc_clear(gc);
-            exit(1);
-        }
-        else if (terminated_pid == pipex->pids[i]) // Check if the child has terminated
-            pipex->status = WEXITSTATUS(status);
-        i++;
-    }
-    gc_clear(gc);
-    exit(pipex->status);
-}
-
 void setup(t_pipex *pipex, t_node **gc, int  ac, char   *av[], char *env[])
 {
     t_node *new_node;
@@ -41,6 +14,24 @@ void setup(t_pipex *pipex, t_node **gc, int  ac, char   *av[], char *env[])
     pipex->outfile = open(av[ac - 1], O_WRONLY | O_CREAT, 0644); // Open the file for writing
     handle_status(pipex, ac, av);
 
+}
+
+void handle_infile(t_pipex *pipex)
+{
+    int fd_null;
+
+    if (pipex->infile == -1)
+    {
+        fd_null = open("/dev/null", O_RDONLY);
+        if (fd_null == -1)
+        {
+            perror("open");
+            exit(1);
+        }
+        dup2(fd_null, STDIN_FILENO);
+        close(pipex->infile);
+        pipex->status = 0;
+    }
 }
 
 void handle_status(t_pipex *pipex, int  ac, char *av[])

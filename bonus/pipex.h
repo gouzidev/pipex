@@ -18,19 +18,14 @@ typedef struct s_node {
 
 typedef struct s_pipex
 {
+    pid_t *pids;
     int **pipes;
     int n_cmds;
     int n_pips;
-    pid_t *pids;
     int infile;
     int outfile;
-    int infile_status;
-    int outfile_status;
     char **cmds;
     char **env;
-    char *env_path;
-    char *cmd_path;
-    char **cmd_args;
     int status;
 
 }  t_pipex;
@@ -42,15 +37,16 @@ int	count_words(char const *s1, char c);
 char	**handle_null_malloc(char const *s, char c, t_node **gc);
 char	**ft_split(char const *s, char c, t_node **gc);
 
+/* helper.c */
+void setup(t_pipex *pipex, t_node **gc, int  ac, char   *av[], char *env[]);
+void handle_infile(t_pipex *pipex);
+void handle_status(t_pipex *pipex, int  ac, char *av[]);
 
-/* prase.c */
+/* pipex.c */
+int main(int ac, char *av[], char *env[]);
 char **parse_commands(t_pipex *pipex, t_node **gc, int  ac, char *av[]);
-
-/* helper1.c */
 void parent(t_pipex *pipex, t_node **gc);
 void setup(t_pipex *pipex, t_node **gc, int  ac, char   *av[], char *env[]);
-// void freee(t_pipex *pipex);
-void handle_status(t_pipex *pipex, int  ac, char *av[]);
 
 /* str.c */
 int ft_strlen(char *str);
@@ -75,5 +71,12 @@ int is_path(char	*cmd);
 char *get_env_path(char	*env[]);
 char	*make_path(char	*path, char	*cmd, t_node **gc);
 char *find_cmd_path(char	*env_path, char *cmd, t_node **gc);
+
+/* exec.c */
+void handle_cmd_path(t_pipex *pipex, int i, t_node **gc, char **cmd_args);
+void handle_unset_path(t_pipex *pipex, int  i, t_node **gc);
+void handle_unkown_cmd(t_pipex *pipex, char **cmd_args, int i, t_node **gc);
+void handle_dup(t_pipex *pipex, int i);
+void execute_cmd(t_pipex *pipex, int i, t_node **gc);
 
 #endif
