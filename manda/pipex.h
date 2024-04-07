@@ -10,7 +10,6 @@
 #include <sys/wait.h>
 #include <sys/types.h>
 #include <errno.h>
-#include "libft/libft.h"
 
 void exit_print(char *msg);
 static int	len(char const *s1);
@@ -22,7 +21,7 @@ static char	**handle_null_malloc(char const *s, char c);
 char	**ft_split(char const *s, char c);
 
 
-
+int ft_strncmp  (const char *s1, const char *s2, size_t n);
 
 
 typedef struct s_node {

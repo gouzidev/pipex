@@ -14,7 +14,7 @@ int** init_pipes(t_pipex *pipex, t_node **gc, int n_cmds)
         {
             gc_clear(gc);
             perror("pipe");
-            exit(1);
+            exit(5);
         }
         i++;
     }

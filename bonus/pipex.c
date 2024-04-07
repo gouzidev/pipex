@@ -1,125 +1,166 @@
 #include "pipex.h"
 
-
-void child1 (int infile_fd, int fds[], char *cmd, char *env[])
+void handle_infile(t_pipex *pipex)
 {
-    int id;
-    char **cmd_args;
-    char *env_path;
-    char *cmd_path;
+    int fd_null;
 
-    id = fork();
-    if (id == 0)
+    if (pipex->infile == -1)
     {
-        dup2(infile_fd, 0); // redirect the input file to stdin
-        dup2(fds[1], 1); // redirect stdout to the write end of the pipe
-        close(fds[0]); // close the read end of the pipe, it's not needed in this process
-        close(infile_fd);
-        cmd_args = ft_split(cmd, ' ');
-        if (!is_path(cmd_args[0]))
+        fd_null = open("/dev/null", O_RDONLY);
+        if (fd_null == -1)
         {
-            env_path = get_env_path(env);
-            if (env_path)
-            {
-                cmd_path = find_cmd_path(env_path, cmd_args[0]);
-                if (cmd_path)
-                    execve(cmd_path, cmd_args, env);
-                exit(0);
-            }
-            printf("path was not set\n");
+            perror("open");
             exit(1);
         }
-        else
-            execve(cmd_args[0], cmd_args, env);
-    perror("cant execve 2\n");
-    exit(1);
+        dup2(fd_null, STDIN_FILENO);
+        close(pipex->infile);
+        pipex->status = 0;
     }
-
 }
-
-void child2 (int outfile_fd, int fds[], char *cmd, char *env[])
+void handle_dup(t_pipex *pipex, int i)
 {
-    int id;
-    char **cmd_args;
-    char *env_path;
-    char *cmd_path;
-
-    id = fork();
-    if (id == 0)
+    if (i == 0)
     {
-        dup2(fds[0], 0); // redirect the read end of the pipe to stdin
-        dup2(outfile_fd, 1); // redirect stdout to the output file
-        close(fds[1]); // close the write end of the pipe, it's not needed in this process
-        close(outfile_fd);
-        cmd_args = ft_split(cmd, ' ');
-        if (!is_path(cmd_args[0]))
-        {
-            env_path = get_env_path(env);
-            if (env_path)
-            {
-                cmd_path = find_cmd_path(env_path, cmd_args[0]);
-                if (cmd_path)
-                    execve(cmd_path, cmd_args, env);
-            }
-            printf("path was not set\n");
-            exit(1);
-        }
-        else
-            execve(cmd_args[0], cmd_args, env);
-    perror("cant execve 4\n");
-    exit(0);
+        if (pipex->infile == -1)
+            handle_infile(pipex);
+        dup2(pipex->infile, STDIN_FILENO); 
+
+        dup2(pipex->pipes[i][1], STDOUT_FILENO); // Redirect stdout to pipe1
+    }
+    else if (i != pipex->n_cmds - 1)
+    {
+        dup2(pipex->pipes[i - 1][0], STDIN_FILENO); // Redirect stdin from pipe2
+        dup2(pipex->pipes[i][1], STDOUT_FILENO); // Redirect stdout to pipe1
+    }
+    else
+    {
+        dup2(pipex->outfile, STDOUT_FILENO); // Redirect stdout to pipex->outfile
+        dup2(pipex->pipes[i - 1][0], STDIN_FILENO); // Redirect stdin from pipe2
     }
 }
 
-void handle_status(int outfile_fd, int infile_fd, int *out_file_status_code, int *in_file_status_code, int  ac, char *av[])
+void handle_cmd_path(t_pipex *pipex, int i, t_node **gc, char **cmd_args)
 {
-    if (outfile_fd == -1)
+    if (access(cmd_args[0], F_OK) == -1)
     {
-        *out_file_status_code = -1;
-        if (access(av[ac - 1], F_OK) == 0)
-            *out_file_status_code = -2;
+        printf("no such file or directory: %s\n", cmd_args[0]);
+        gc_clear(gc);
+        if (i == pipex->n_cmds - 1)
+            exit(127); // last path to cmd not found
+        exit(0); // path to cmd not found
     }
+    else if (access(cmd_args[0], X_OK) == -1)
+    {
+        printf("permission denied: %s\n", cmd_args[0]);
+        gc_clear(gc);
+        if (i == pipex->n_cmds - 1)
+            exit(126); // last path to cmd not found
+        exit(0); // path to cmd not found
 
-    if (infile_fd == -1)
-    {
-        *in_file_status_code = -1;
-        if (access(av[1], F_OK) == 0)
-            *in_file_status_code = -2;
     }
-    if (*in_file_status_code == -1)
-        printf("no such file or directory: %s\n", av[1]);
-    if (*in_file_status_code == -2)
-        printf("permission denied: %s\n", av[1]);
-    if (*out_file_status_code == -2)
-        printf("permission denied: %s\n", av[ac - 1]);
+    else
+    {
+        handle_dup(pipex, i);
+        execve(cmd_args[0], cmd_args, pipex->env);
+        printf("execve failed: %s\n", cmd_args[0]);
+        gc_clear(gc);
+        if (i == pipex->n_cmds - 1)
+            exit(127); // last path to cmd not found
+        exit(0); // path to cmd not found
+    }
+}
+
+void handle_unset_path(t_pipex *pipex, int  i, t_node **gc)
+{
+    perror("path was not set\n");
+    gc_clear(gc);
+    if (i == pipex->n_cmds - 1)
+        exit(127); // last path was not set
+    else
+        exit(0); // path was not set
+}
+
+void handle_unkown_cmd(t_pipex *pipex, char **cmd_args, int i, t_node **gc)
+{
+    printf("command not found: %s\n", cmd_args[0]);
+    gc_clear(gc);
+    if (i == pipex->n_cmds - 1)
+        exit(127); // last cmd not found
+    exit(10); // cmd not found
+}
+
+void execute_cmd(t_pipex *pipex, int i, t_node **gc)
+{
+    char **cmd_args;
+    char *env_path;
+    char *cmd_path;
+    cmd_args = ft_split(pipex->cmds[i], ' ', gc);
+    if (!is_path(cmd_args[0]))
+    {
+        env_path = get_env_path(pipex->env);
+        if (env_path)
+        {
+            cmd_path = find_cmd_path(env_path, cmd_args[0], gc);
+            if (cmd_path)
+            {
+                handle_dup(pipex, i);
+                execve(cmd_path, cmd_args, pipex->env);
+            }
+            else
+                handle_unkown_cmd(pipex, cmd_args, i, gc);
+        }
+        else
+            handle_unset_path(pipex, i, gc);
+    }
+    else
+        handle_cmd_path(pipex, i, gc, cmd_args);
+}
+
+void child(t_pipex *pipex, int i, t_node **gc)
+{
+    close_unused_pipes(pipex->pipes, i, pipex->n_pips);
+    if (i == 0) // first child
+    {
+        close(pipex->outfile);
+    }
+    else if (i == pipex->n_cmds - 1) // last child
+    {
+        if (pipex->infile != -1)
+            close(pipex->infile);
+    }
+    else
+    {
+        if (pipex->infile != -1)
+            close(pipex->infile);
+        if (pipex->outfile != -1)
+            close(pipex->outfile);
+    }
+    execute_cmd(pipex, i, gc);
 }
 
 int main(int ac, char *av[], char *env[])
 {
-    int status;
-    int in_file_status_code;
-    int out_file_status_code;
-    int fds[2];
+    struct s_pipex pipex;
+    t_node *gc;
+    int i;
+    pid_t id;
 
-    if (ac != 5)
-        exit_print("bad number of args");
-
-    int infile_fd = open(av[1], O_RDONLY);
-    if (infile_fd == -1)
-        in_file_status_code = -1;
-    int outfile_fd = open(av[ac - 1], O_CREAT | O_WRONLY | O_TRUNC, 0777);
-    handle_status(outfile_fd, infile_fd, &out_file_status_code, &in_file_status_code, ac, av);
-    pipe(fds); // Create the pipe before the fork
-
-    if (in_file_status_code != -1)
-        child1(infile_fd, fds, av[2], env);
-    if (out_file_status_code != -2)
-        child2(outfile_fd, fds, av[3], env);
-
-    close(fds[0]); // close the read end of the pipe in the parent process
-    close(fds[1]); // close the write end of the pipe in the parent process
-
-    wait(&status);
-    wait(&status);
+    if (ac < 5)
+        perror("usage: ./pipex infile cmd1 cmd2 outfile");
+    gc = gc_init();
+    setup(&pipex, &gc, ac, av, env);
+    i = 0;
+    while (i < pipex.n_cmds)
+    {
+        id = fork();
+        if (id == 0)
+            child(&pipex, i, &gc);
+        if (id == -1)
+            (gc_clear(&gc), perror("fork"), exit(1));
+        else
+            pipex.pids[i] = id;
+        i++;
+    }
+    parent(&pipex, &gc);
     return 0;
 }

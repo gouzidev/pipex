@@ -18,39 +18,37 @@ char *get_env_path(char	*env[])
 	}
 	return (NULL);
 }
-char	*make_path(char	*path, char	*cmd)
+
+char	*make_path(char	*path, char	*cmd, t_node **gc)
 {
 	char	*full_path;
 	char	*temp;
 
 	temp = ft_strjoin(path, "/");
-	if (temp == NULL)
-		perror("malloc");
+	gc_push(gc, temp);
 	full_path = ft_strjoin(temp, cmd);
-	if (full_path == NULL)
-		perror("malloc");
-	free(temp);
+	gc_push(gc, full_path);
 	return full_path;
 }
 
-char *find_cmd_path(char	*env_path, char *cmd)
+char *find_cmd_path(char	*env_path, char *cmd, t_node **gc)
 {
 	char	**paths;
 	char	*path;
 	int		i;
 
-	paths = ft_split(env_path, ':');
+	paths = ft_split(env_path, ':', gc);
 	if (paths == NULL)
 		perror("malloc");
 	i = 0;
 	while (paths[i])
 	{
-		path = make_path(paths[i], cmd);
+		path = make_path(paths[i], cmd, gc);
 		if (path == NULL)
 			perror("malloc");
 		if (access(path, X_OK) == 0)
 			return path;
-		free(path);
+		// free(path);
 		i++;
 	}
     return NULL;
