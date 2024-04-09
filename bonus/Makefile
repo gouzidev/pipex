@@ -3,7 +3,7 @@ NAME = pipex
 FLAGS = -Wall -Wextra -Werror
 LEAK = -fsanitize=address
 
-SRCS = pipex.c exec.c split.c helper.c path.c str.c pipe.c gc.c
+SRCS = pipex.c exec.c split.c helper.c path.c str.c pipe.c gc.c gnl.c heredoc.c printf.c
 OBJS = $(SRCS:.c=.o)
 
 all: $(OBJS)

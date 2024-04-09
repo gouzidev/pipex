@@ -24,10 +24,8 @@ char	*make_path(char	*path, char	*cmd, t_node **gc)
 	char	*full_path;
 	char	*temp;
 
-	temp = ft_strjoin(path, "/");
-	gc_push(gc, temp);
-	full_path = ft_strjoin(temp, cmd);
-	gc_push(gc, full_path);
+	temp = ft_strjoin(path, "/", gc);
+	full_path = ft_strjoin(temp, cmd, gc);
 	return full_path;
 }
 
@@ -48,7 +46,6 @@ char *find_cmd_path(char	*env_path, char *cmd, t_node **gc)
 			perror("malloc");
 		if (access(path, X_OK) == 0)
 			return path;
-		// free(path);
 		i++;
 	}
     return NULL;

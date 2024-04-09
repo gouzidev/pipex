@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
+# include <stdarg.h>
 
 #include <sys/stat.h>
 #include <sys/wait.h>
@@ -18,7 +19,7 @@ typedef struct s_node {
 
 typedef struct s_pipex
 {
-    pid_t *pids;
+    int *pids;
     int **pipes;
     int n_cmds;
     int n_pips;
@@ -29,6 +30,14 @@ typedef struct s_pipex
     int status;
 
 }  t_pipex;
+
+
+/* gnl */
+char	*get_next_line(int fd, t_node **gc);
+char	*ft_strchr(char *s, int c);
+char	*ft_strjoin_gnl(char *left_str, char *buff, t_node **gc);
+char	*ft_get_line(char *left_str, t_node **gc);
+char	*get_rest(char *left_str, t_node **gc);
 
 
 /* split.c */
@@ -45,13 +54,14 @@ void handle_status(t_pipex *pipex, int  ac, char *av[]);
 /* pipex.c */
 int main(int ac, char *av[], char *env[]);
 char **parse_commands(t_pipex *pipex, t_node **gc, int  ac, char *av[]);
-void parent(t_pipex *pipex, t_node **gc);
+void parent(t_pipex *pipex, t_node **gc, int hd_flag);
 void setup(t_pipex *pipex, t_node **gc, int  ac, char   *av[], char *env[]);
 
 /* str.c */
+int	ft_strcmp(const char *s1, const char *s2);
 int ft_strlen(char *str);
 char *ft_strdup(char *str, t_node **gc);
-char	*ft_strjoin(char const *s1, char const *s2);
+char	*ft_strjoin(char const *s1, char const *s2, t_node **gc);
 char	*ft_substr(char const *s, unsigned int start, size_t len, t_node **gc);
 int ft_strncmp  (const char *s1, const char *s2, size_t n);
 
@@ -78,5 +88,11 @@ void handle_unset_path(t_pipex *pipex, int  i, t_node **gc);
 void handle_unkown_cmd(t_pipex *pipex, char **cmd_args, int i, t_node **gc);
 void handle_dup(t_pipex *pipex, int i);
 void execute_cmd(t_pipex *pipex, int i, t_node **gc);
+
+/* */
+void handle_here_doc(int ac, char *av[], char *env[], t_node **gc);
+
+int		ft_printf(const char *s, ...);
+void	ft_putstr(char *s, int *i);
 
 #endif

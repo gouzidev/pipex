@@ -15,6 +15,34 @@ char **parse_commands(t_pipex *pipex, t_node **gc, int  ac, char *av[])
     return cmds;
 }
 
+void execute_here_doc_cmd(t_pipex *pipex, int i, t_node **gc)
+{
+    char **cmd_args;
+    char *env_path;
+    char *cmd_path;
+    cmd_args = ft_split(pipex->cmds[i], ' ', gc);
+    if (!is_path(cmd_args[0]))
+    {
+        env_path = get_env_path(pipex->env);
+        if (env_path)
+        {
+            cmd_path = find_cmd_path(env_path, cmd_args[0], gc);
+            if (cmd_path)
+            {
+                handle_dup(pipex, i);
+                execve(cmd_path, cmd_args, pipex->env);
+            }
+            else
+                handle_unkown_cmd(pipex, cmd_args, i, gc);
+        }
+        else
+            handle_unset_path(pipex, i, gc);
+    }
+    else
+        handle_cmd_path(pipex, i, gc, cmd_args);
+}
+
+
 void child(t_pipex *pipex, int i, t_node **gc)
 {
     close_unused_pipes(pipex->pipes, i, pipex->n_pips);
@@ -37,15 +65,18 @@ void child(t_pipex *pipex, int i, t_node **gc)
     execute_cmd(pipex, i, gc);
 }
 
-void parent(t_pipex *pipex, t_node **gc)
+void parent(t_pipex *pipex, t_node **gc, int hd_flag)
 {
     int i;
     int status;
-    pid_t terminated_pid;
+    int terminated_pid;
 
-    if (pipex->outfile != -1)
-        close(pipex->outfile);
-    close_allthe_pipes(pipex->pipes);
+    if (!hd_flag)
+    {
+        if (pipex->outfile != -1)
+            close(pipex->outfile);
+        close_allthe_pipes(pipex->pipes);
+    }
     i = 0;
     while (i < pipex->n_cmds)
     {
@@ -64,16 +95,28 @@ void parent(t_pipex *pipex, t_node **gc)
     exit(pipex->status);
 }
 
+int is_here_doc(int ac, char    *av[])
+{
+    return (ac == 6 && ft_strncmp(av[1], "here_doc", 8) == 0);
+}
+
+
+
 int main(int ac, char *av[], char *env[])
 {
     struct s_pipex pipex;
     t_node *gc;
     int i;
-    pid_t id;
+    int id;
 
     if (ac < 5)
         perror("usage: ./pipex infile cmd1 cmd2 outfile");
     gc = gc_init();
+    if (is_here_doc(ac, av))
+    {
+        handle_here_doc(ac, av, env, &gc);
+        exit(0);
+    }
     setup(&pipex, &gc, ac, av, env);
     i = 0;
     while (i < pipex.n_cmds)
@@ -81,12 +124,12 @@ int main(int ac, char *av[], char *env[])
         id = fork();
         if (id == 0)
             child(&pipex, i, &gc);
-        if (id == -1)
+        else if (id == -1)
             (gc_clear(&gc), perror("fork"), exit(1));
         else
             pipex.pids[i] = id;
         i++;
     }
-    parent(&pipex, &gc);
+    parent(&pipex, &gc, 0);
     return 0;
 }

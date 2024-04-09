@@ -4,7 +4,7 @@ void handle_cmd_path(t_pipex *pipex, int i, t_node **gc, char **cmd_args)
 {
     if (access(cmd_args[0], F_OK) == -1)
     {
-        printf("no such file or directory: %s\n", cmd_args[0]);
+        ft_printf("no such file or directory: %s\n", cmd_args[0]);
         gc_clear(gc);
         if (i == pipex->n_cmds - 1)
             exit(127); // last path to cmd not found
@@ -12,7 +12,7 @@ void handle_cmd_path(t_pipex *pipex, int i, t_node **gc, char **cmd_args)
     }
     else if (access(cmd_args[0], X_OK) == -1)
     {
-        printf("permission denied: %s\n", cmd_args[0]);
+        ft_printf("permission denied: %s\n", cmd_args[0]);
         gc_clear(gc);
         if (i == pipex->n_cmds - 1)
             exit(126); // last path to cmd not found
@@ -23,7 +23,7 @@ void handle_cmd_path(t_pipex *pipex, int i, t_node **gc, char **cmd_args)
     {
         handle_dup(pipex, i);
         execve(cmd_args[0], cmd_args, pipex->env);
-        printf("execve failed: %s\n", cmd_args[0]);
+        ft_printf("execve failed: %s\n", cmd_args[0]);
         gc_clear(gc);
         if (i == pipex->n_cmds - 1)
             exit(127); // last path to cmd not found
@@ -43,7 +43,7 @@ void handle_unset_path(t_pipex *pipex, int  i, t_node **gc)
 
 void handle_unkown_cmd(t_pipex *pipex, char **cmd_args, int i, t_node **gc)
 {
-    printf("command not found: %s\n", cmd_args[0]);
+    ft_printf("command not found: %s\n", cmd_args[0]);
     gc_clear(gc);
     if (i == pipex->n_cmds - 1)
         exit(127); // last cmd not found

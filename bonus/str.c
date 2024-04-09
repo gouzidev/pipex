@@ -19,6 +19,21 @@ int	ft_strncmp(const char *s1, const char *s2, size_t n)
 	return (str1[i] - str2[i]);
 }
 
+int	ft_strcmp(const char *s1, const char *s2)
+{
+	size_t			i;
+	unsigned char	*str1;
+	unsigned char	*str2;
+
+	str1 = ((unsigned char *)s1);
+	str2 = ((unsigned char *)s2);
+	i = 0;
+	while (str2[i] != '\0' && str1[i] == str2[i])
+		i++;
+	return (str1[i] - str2[i]);
+}
+
+
 int ft_strlen(char *str)
 {
     int i;
@@ -45,7 +60,7 @@ char *ft_strdup(char *str, t_node **gc)
     return new_str;
 }
 
-char	*ft_strjoin(char const *s1, char const *s2)
+char	*ft_strjoin(char const *s1, char const *s2, t_node **gc)
 {
 	char	*output;
 	int		i;
@@ -53,9 +68,9 @@ char	*ft_strjoin(char const *s1, char const *s2)
 
 	if (s1 == NULL || s2 == NULL)
 		return (NULL);
-	output = (char *)malloc((len(s1) + len(s2) + 1) * sizeof(char));
+	output = (char *)gc_malloc(gc, (len(s1) + len(s2) + 1) * sizeof(char));
 	if (output == NULL)
-		return (NULL);
+		(gc_clear(gc), exit(1));
 	i = 0;
 	while (i < len(s1))
 	{
