@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sgouzi <sgouzi@student.42.fr>              +#+  +:+       +#+        */
+/*   By: sgouzi <sgouzi@student.1337.ma>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 18:08:21 by sgouzi            #+#    #+#             */
-/*   Updated: 2024/04/23 18:39:43 by sgouzi           ###   ########.fr       */
+/*   Updated: 2024/04/23 21:38:05 by sgouzi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,9 +56,9 @@ void	handle_dup(t_pipex *pipex, int i)
 {
 	if (i == 0)
 	{
-		if (pipex->infile == -1)
+		if (pipex->infile_fd == -1)
 			handle_infile(pipex);
-		dup2(pipex->infile, STDIN_FILENO);
+		dup2(pipex->infile_fd, STDIN_FILENO);
 		dup2(pipex->pipes[i][1], STDOUT_FILENO);
 	}
 	else if (i != pipex->n_cmds - 1)
@@ -68,7 +68,7 @@ void	handle_dup(t_pipex *pipex, int i)
 	}
 	else
 	{
-		dup2(pipex->outfile, STDOUT_FILENO);
+		dup2(pipex->outfile_fd, STDOUT_FILENO);
 		dup2(pipex->pipes[i - 1][0], STDIN_FILENO);
 	}
 }

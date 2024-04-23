@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipex.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sgouzi <sgouzi@student.42.fr>              +#+  +:+       +#+        */
+/*   By: sgouzi <sgouzi@student.1337.ma>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 18:09:28 by sgouzi            #+#    #+#             */
-/*   Updated: 2024/04/23 18:09:29 by sgouzi           ###   ########.fr       */
+/*   Updated: 2024/04/23 21:52:45 by sgouzi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,21 +61,21 @@ void	execute_here_doc_cmd(t_pipex *pipex, int i, t_node **gc)
 void	child(t_pipex *pipex, int i, t_node **gc)
 {
 	close_unused_pipes(pipex->pipes, i, pipex->n_pips);
-	if (i == 0) // first child
+	if (i == 0)
 	{
-		close(pipex->outfile);
+		close(pipex->outfile_fd);
 	}
-	else if (i == pipex->n_cmds - 1) // last child
+	else if (i == pipex->n_cmds - 1)
 	{
-		if (pipex->infile != -1)
-			close(pipex->infile);
+		if (pipex->infile_fd != -1)
+			close(pipex->infile_fd);
 	}
 	else
 	{
-		if (pipex->infile != -1)
-			close(pipex->infile);
-		if (pipex->outfile != -1)
-			close(pipex->outfile);
+		if (pipex->infile_fd != -1)
+			close(pipex->infile_fd);
+		if (pipex->outfile_fd != -1)
+			close(pipex->outfile_fd);
 	}
 	execute_cmd(pipex, i, gc);
 }
@@ -88,8 +88,8 @@ void	parent(t_pipex *pipex, t_node **gc, int hd_flag)
 
 	if (!hd_flag)
 	{
-		if (pipex->outfile != -1)
-			close(pipex->outfile);
+		if (pipex->outfile_fd != -1)
+			close(pipex->outfile_fd);
 		close_allthe_pipes(pipex->pipes);
 	}
 	i = 0;
@@ -109,23 +109,29 @@ void	parent(t_pipex *pipex, t_node **gc, int hd_flag)
 	exit(pipex->status);
 }
 
-int	is_here_doc(int ac, char *av[])
+void check_args(int ac, char *av[], char *env[], t_node **gc)
 {
-	return (ac == 6 && ft_strncmp(av[1], "here_doc", 9) == 0);
+	if (ac < 5)
+		(write(2, "usage: ./pipex file1 cmd1 cmd2 cmd3 ... cmdn file2\n", 52),
+			exit(1));
+	if (ft_strncmp(av[1], "here_doc", 9) == 0)
+	{
+		if (ac == 6)
+			(handle_here_doc(ac, av, env, &gc), exit(0));
+		(write(2, "usage: ./pipex here_doc LIMITER cmd cmd1 file\n", 47),
+			exit(1));
+	}
 }
 
 int	main(int ac, char *av[], char *env[])
 {
-	struct s_pipex pipex;
-	t_node *gc;
-	int i;
-	int id;
+	struct s_pipex	pipex;
+	t_node			*gc;
+	int				i;
+	int				id;
 
-	if (ac < 5)
-		(write(2, "usage: ./pipex infile cmd1 cmd2 outfile\n", 41), exit(1));
+
 	gc = gc_init();
-	if (is_here_doc(ac, av))
-		(handle_here_doc(ac, av, env, &gc), exit(0));
 	pipex.env = env;
 	setup(&pipex, &gc, ac, av);
 	i = 0;

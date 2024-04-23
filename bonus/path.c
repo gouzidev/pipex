@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   path.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sgouzi <sgouzi@student.42.fr>              +#+  +:+       +#+        */
+/*   By: sgouzi <sgouzi@student.1337.ma>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 18:09:25 by sgouzi            #+#    #+#             */
-/*   Updated: 2024/04/23 18:09:26 by sgouzi           ###   ########.fr       */
+/*   Updated: 2024/04/23 21:48:03 by sgouzi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,10 +28,10 @@ char	*get_env_path(char *env[])
 
 char	*find_cmd_path(char *env_path, char *cmd, t_node **gc)
 {
-	char **paths;
-	int i;
-	char *full_path;
-	char *temp;
+	char	**paths;
+	int		i;
+	char	*full_path;
+	char	*temp;
 
 	paths = ft_split(env_path, ':', gc);
 	if (paths == NULL)

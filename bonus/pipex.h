@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipex.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sgouzi <sgouzi@student.42.fr>              +#+  +:+       +#+        */
+/*   By: sgouzi <sgouzi@student.1337.ma>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 18:09:30 by sgouzi            #+#    #+#             */
-/*   Updated: 2024/04/23 18:41:02 by sgouzi           ###   ########.fr       */
+/*   Updated: 2024/04/23 21:45:02 by sgouzi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,8 +35,10 @@ typedef struct s_pipex
 	int				**pipes;
 	int				n_cmds;
 	int				n_pips;
-	int				infile;
-	int				outfile;
+	int				infile_fd;
+	int				outfile_fd;
+	char			*outfile;
+	char			*infile;
 	char			**cmds;
 	char			**env;
 	int				status;
@@ -89,7 +91,6 @@ void				gc_clear(t_node **gc);
 
 /* path.c */
 char				*get_env_path(char *env[]);
-char				*make_path(char *path, char *cmd, t_node **gc);
 char				*find_cmd_path(char *env_path, char *cmd, t_node **gc);
 
 /* exec.c */

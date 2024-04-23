@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   heredoc.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sgouzi <sgouzi@student.42.fr>              +#+  +:+       +#+        */
+/*   By: sgouzi <sgouzi@student.1337.ma>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 18:09:22 by sgouzi            #+#    #+#             */
-/*   Updated: 2024/04/23 18:54:41 by sgouzi           ###   ########.fr       */
+/*   Updated: 2024/04/23 21:54:30 by sgouzi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
-void	handle_dup_hd(t_pipex *pipex, int i, char *outfile)
+void	handle_dup_hd(t_pipex *pipex, int i)
 {
 	int	**fds;
 
@@ -26,20 +26,19 @@ void	handle_dup_hd(t_pipex *pipex, int i, char *outfile)
 	}
 	else if (i == 1)
 	{
-		pipex->outfile = open(outfile, O_WRONLY | O_CREAT | O_TRUNC);
-		if (pipex->outfile == -1 && access(outfile, X_OK) == -1)
-			(ft_printf("permission denied: %s\n", outfile), exit(1));
+		pipex->outfile_fd = open(pipex->outfile, O_WRONLY | O_CREAT | O_TRUNC);
+		if (pipex->outfile_fd == -1 && access(pipex->outfile, X_OK) == -1)
+			(ft_printf("permission denied: %s\n", pipex->outfile), exit(1));
 		dup2(fds[1][0], STDIN_FILENO);
-		dup2(pipex->outfile, STDOUT_FILENO);
+		dup2(pipex->outfile_fd, STDOUT_FILENO);
 		close(fds[0][1]);
 		close(fds[0][0]);
 		close(fds[1][1]);
-		close(pipex->outfile);
+		close(pipex->outfile_fd);
 	}
 }
 
-void	handle_cmd_path_hd(t_pipex *pipex, int i, t_node **gc, char **cmd_args,
-		char *outfile)
+void	handle_cmd_path_hd(t_pipex *pipex, int i, t_node **gc, char **cmd_args)
 {
 	if (access(cmd_args[0], F_OK) == -1)
 	{
@@ -55,7 +54,7 @@ void	handle_cmd_path_hd(t_pipex *pipex, int i, t_node **gc, char **cmd_args,
 	}
 	else
 	{
-		handle_dup_hd(pipex, i, outfile);
+		handle_dup_hd(pipex, i);
 		execve(cmd_args[0], cmd_args, pipex->env);
 		ft_printf("execve failed: %s\n", cmd_args[0]);
 		gc_clear(gc);
@@ -63,7 +62,7 @@ void	handle_cmd_path_hd(t_pipex *pipex, int i, t_node **gc, char **cmd_args,
 	}
 }
 
-void	execute_cmd_hd(t_pipex *pipex, int i, t_node **gc, char *outfile)
+void	execute_cmd_hd(t_pipex *pipex, int i, t_node **gc)
 {
 	char	**cmd_args;
 	char	*env_path;
@@ -78,7 +77,7 @@ void	execute_cmd_hd(t_pipex *pipex, int i, t_node **gc, char *outfile)
 			cmd_path = find_cmd_path(env_path, cmd_args[0], gc);
 			if (cmd_path)
 			{
-				handle_dup_hd(pipex, i, outfile);
+				handle_dup_hd(pipex, i);
 				execve(cmd_path, cmd_args, pipex->env);
 				(gc_clear(gc), perror("execve"), exit(1));
 			}
@@ -89,7 +88,7 @@ void	execute_cmd_hd(t_pipex *pipex, int i, t_node **gc, char *outfile)
 			handle_unset_path(pipex, i, gc);
 	}
 	else
-		handle_cmd_path_hd(pipex, i, gc, cmd_args, outfile);
+		handle_cmd_path_hd(pipex, i, gc, cmd_args);
 }
 
 void	setup_hd(t_pipex *pipex, char *av[], char *env[], t_node **gc)
@@ -112,6 +111,8 @@ void	setup_hd(t_pipex *pipex, char *av[], char *env[], t_node **gc)
 		(gc_clear(gc), perror("pipe"), exit(1));
 	if (pipe(fds[1]) == -1)
 		(gc_clear(gc), perror("pipe"), exit(1));
+	pipex->outfile = av[5];
+	pipex->infile = NULL;
 }
 
 void	clean_hd(t_pipex pipex, t_node **gc, int status)
@@ -132,6 +133,7 @@ void	handle_here_doc(int ac, char *av[], char *env[], t_node **gc)
 	char	*line;
 	int		status;
 	int		i;
+	int		id;
 	t_pipex	pipex;
 
 	setup_hd(&pipex, av, env, gc);
@@ -144,10 +146,12 @@ void	handle_here_doc(int ac, char *av[], char *env[], t_node **gc)
 	i = -1;
 	while (++i < pipex.n_cmds)
 	{
-		pipex.pids[i] = fork();
-		if (pipex.pids[i] == 0)
-			execute_cmd_hd(&pipex, i, gc, av[5]);
+		id = fork();
+		if (id == 0)
+			execute_cmd_hd(&pipex, i, gc);
 		else if (pipex.pids[i] == -1)
 			(gc_clear(gc), perror("fork"), exit(1));
+		else
+			pipex.pids[i] = id;
 	}
 }
