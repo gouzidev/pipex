@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line_utils.c                              :+:      :+:    :+:   */
+/*   gnl.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sgouzi <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: sgouzi <sgouzi@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/29 13:27:59 by sgouzi            #+#    #+#             */
-/*   Updated: 2023/11/29 13:28:00 by sgouzi           ###   ########.fr       */
+/*   Updated: 2024/04/23 18:39:43 by sgouzi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ char	*ft_strchr(char *s, int c)
 	if (!s)
 		return (0);
 	if (c == '\0')
-		return ((char *)&s[ft_strlen(s)]);
+		return ((char *)&s[len(s)]);
 	while (s[i] != '\0')
 	{
 		if (s[i] == (char)c)
@@ -43,7 +43,7 @@ char	*ft_strjoin_gnl(char *str, char *buff, t_node **gc)
 	}
 	if (!buff)
 		return (NULL);
-	res = gc_malloc(gc, sizeof(char) * ((ft_strlen(str) + ft_strlen(buff)) + 1));
+	res = gc_malloc(gc, sizeof(char) * ((len(str) + len(buff)) + 1));
 	if (res == NULL)
 		(gc_clear(gc), exit(1));
 	i = -1;
@@ -53,7 +53,7 @@ char	*ft_strjoin_gnl(char *str, char *buff, t_node **gc)
 			res[i] = str[i];
 	while (buff[j] != '\0')
 		res[i++] = buff[j++];
-	res[ft_strlen(str) + ft_strlen(buff)] = '\0';
+	res[len(str) + len(buff)] = '\0';
 	return (res);
 }
 
@@ -95,12 +95,9 @@ char	*get_rest(char *str, t_node **gc)
 		i++;
 	if (!str[i])
 		return (NULL);
-	buff = (char *)gc_malloc(gc, sizeof(char) * (ft_strlen(str) - i + 1));
+	buff = (char *)gc_malloc(gc, sizeof(char) * (len(str) - i + 1));
 	if (!buff)
-	{
-		free(str);
-		return (NULL);
-	}
+		(gc_clear(gc), perror("malloc"), exit(1));
 	i++;
 	j = 0;
 	while (str[i])

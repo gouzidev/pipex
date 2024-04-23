@@ -1,8 +1,20 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   gc.c                                               :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sgouzi <sgouzi@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/04/23 18:09:15 by sgouzi            #+#    #+#             */
+/*   Updated: 2024/04/23 18:09:56 by sgouzi           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "pipex.h"
 
-void gc_push(t_node **gc, void *data)
+void	gc_push(t_node **gc, void *data)
 {
-	t_node *new_node;
+	t_node	*new_node;
 
 	if (data == NULL)
 	{
@@ -22,10 +34,10 @@ void gc_push(t_node **gc, void *data)
 	*gc = new_node;
 }
 
-void *gc_malloc (t_node **gc, size_t size)
+void	*gc_malloc(t_node **gc, size_t size)
 {
 	t_node	*new_node;
-	void *ptr;
+	void	*ptr;
 
 	ptr = malloc(size);
 	if (ptr == 0)
@@ -47,9 +59,9 @@ void *gc_malloc (t_node **gc, size_t size)
 	return (ptr);
 }
 
-t_node* gc_init()
+t_node	*gc_init(void)
 {
-    return NULL; // Initialize the garbage collector (linked list) as empty
+	return (NULL);
 }
 
 void	gc_clear(t_node **gc)
@@ -62,8 +74,7 @@ void	gc_clear(t_node **gc)
 	{
 		temp = curr;
 		curr = curr->next;
-        free(temp->data);
+		free(temp->data);
 		free(temp);
 	}
 }
-

@@ -1,20 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   path.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sgouzi <sgouzi@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/04/23 18:09:25 by sgouzi            #+#    #+#             */
+/*   Updated: 2024/04/23 18:09:26 by sgouzi           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "pipex.h"
 
-int is_path(char	*cmd)
-{
-	int	i;
-	if (cmd[0] == '/' || cmd[0] == '.')
-		return 1;
-	while (cmd[i])
-	{
-		if (cmd[i] == '/')
-			return 1;
-		i++;
-	}
-	return 0;
-}
-
-char *get_env_path(char	*env[])
+char	*get_env_path(char *env[])
 {
 	int	i;
 
@@ -22,27 +20,18 @@ char *get_env_path(char	*env[])
 	while (env[i])
 	{
 		if (ft_strncmp("PATH=", env[i], 5) == 0)
-			return env[i] + 5;
+			return (env[i] + 5);
 		i++;
 	}
 	return (NULL);
 }
 
-char	*make_path(char	*path, char	*cmd, t_node **gc)
+char	*find_cmd_path(char *env_path, char *cmd, t_node **gc)
 {
-	char	*full_path;
-	char	*temp;
-
-	temp = ft_strjoin(path, "/", gc);
-	full_path = ft_strjoin(temp, cmd, gc);
-	return full_path;
-}
-
-char *find_cmd_path(char	*env_path, char *cmd, t_node **gc)
-{
-	char	**paths;
-	char	*path;
-	int		i;
+	char **paths;
+	int i;
+	char *full_path;
+	char *temp;
 
 	paths = ft_split(env_path, ':', gc);
 	if (paths == NULL)
@@ -50,12 +39,15 @@ char *find_cmd_path(char	*env_path, char *cmd, t_node **gc)
 	i = 0;
 	while (paths[i])
 	{
-		path = make_path(paths[i], cmd, gc);
-		if (path == NULL)
+		temp = ft_strjoin(paths[i], "/", gc);
+		if (temp == NULL)
 			perror("malloc");
-		if (access(path, X_OK) == 0)
-			return path;
+		full_path = ft_strjoin(temp, cmd, gc);
+		if (full_path == NULL)
+			perror("malloc");
+		if (access(full_path, X_OK) == 0)
+			return (full_path);
 		i++;
 	}
-    return NULL;
+	return (NULL);
 }
