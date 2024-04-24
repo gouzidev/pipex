@@ -6,7 +6,7 @@
 /*   By: sgouzi <sgouzi@student.1337.ma>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 18:09:22 by sgouzi            #+#    #+#             */
-/*   Updated: 2024/04/23 22:08:50 by sgouzi           ###   ########.fr       */
+/*   Updated: 2024/04/23 22:23:41 by sgouzi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,6 +113,9 @@ void	setup_hd(t_pipex *pipex, char *av[], char *env[], t_node **gc)
 		(gc_clear(gc), perror("pipe"), exit(1));
 	pipex->outfile = av[5];
 	pipex->infile = NULL;
+	pipex->infile_fd = 0;
+	pipex->outfile_fd = open(pipex->outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+
 }
 
 void	clean_hd(t_pipex pipex, t_node **gc, int status)
@@ -148,7 +151,7 @@ void	handle_here_doc(int ac, char *av[], char *env[], t_node **gc)
 	{
 		id = fork();
 		if (id == 0)
-			execute_cmd_hd(&pipex, i, gc);
+			execute_cmd(&pipex, i, gc);
 		else if (pipex.pids[i] == -1)
 			(gc_clear(gc), perror("fork"), exit(1));
 		else
