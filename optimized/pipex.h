@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipex.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sgouzi <sgouzi@student.1337.ma>            +#+  +:+       +#+        */
+/*   By: sgouzi <sgouzi@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 18:09:30 by sgouzi            #+#    #+#             */
-/*   Updated: 2024/04/23 22:09:58 by sgouzi           ###   ########.fr       */
+/*   Updated: 2024/04/24 23:34:00 by sgouzi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ typedef struct s_pipex
 	char			**cmds;
 	char			**env;
 	int				status;
+	int				is_here_doc;
 
 }					t_pipex;
 
@@ -68,7 +69,7 @@ int					main(int ac, char *av[], char *env[]);
 char				**parse_commands(t_pipex *pipex, t_node **gc, int ac,
 						char *av[]);
 void				parent(t_pipex *pipex, t_node **gc, int hd_flag);
-
+void				close_unused_files(int i, t_pipex *pipex);
 /* str.c */
 int					ft_strcmp(const char *s1, const char *s2);
 int					len(char *str);
@@ -81,7 +82,7 @@ int					ft_strncmp(const char *s1, const char *s2, size_t n);
 /* pipe.c */
 int					**init_pipes(t_pipex *pipex, t_node **gc, int n_cmds);
 void				close_allthe_pipes(int **pipes);
-void				close_unused_pipes(int **pipes, int process_index,
+void				close_unused_pipes(t_pipex *pipex, int **pipes, int process_index,
 						int n_pips);
 
 /* gc.c */
@@ -106,6 +107,7 @@ void				execute_cmd(t_pipex *pipex, int i, t_node **gc);
 /* */
 void				handle_here_doc(int ac, char *av[], char *env[],
 						t_node **gc);
+void	setup_hd(t_pipex *pipex, t_node **gc, int ac, char *av[]);
 
 int					ft_printf(const char *s, ...);
 void				ft_putstr(char *s, int *i);

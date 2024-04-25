@@ -6,7 +6,7 @@
 /*   By: sgouzi <sgouzi@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 18:09:27 by sgouzi            #+#    #+#             */
-/*   Updated: 2024/04/23 18:09:28 by sgouzi           ###   ########.fr       */
+/*   Updated: 2024/04/25 02:48:46 by sgouzi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ void	close_allthe_pipes(int **pipes)
 	}
 }
 
-void	close_unused_pipes(int **pipes, int process_index, int n_pips)
+void	close_unused_pipes(t_pipex *pipex, int **pipes, int process_index, int n_pips)
 {
 	int	i;
 
@@ -58,7 +58,8 @@ void	close_unused_pipes(int **pipes, int process_index, int n_pips)
 		{
 			if (i != 0)
 				close(pipes[i][1]);
-			close(pipes[i][0]);
+			if (!pipex->is_here_doc)
+				close(pipes[i][0]);
 		}
 		else if (process_index != n_pips)
 		{
@@ -67,7 +68,7 @@ void	close_unused_pipes(int **pipes, int process_index, int n_pips)
 			if (process_index != i)
 				close(pipes[i][1]);
 		}
-		else // last process
+		else
 		{
 			if (i != process_index - 1)
 				close(pipes[i][0]);

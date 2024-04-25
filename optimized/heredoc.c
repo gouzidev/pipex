@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   heredoc.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sgouzi <sgouzi@student.1337.ma>            +#+  +:+       +#+        */
+/*   By: sgouzi <sgouzi@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 18:09:22 by sgouzi            #+#    #+#             */
-/*   Updated: 2024/04/23 22:23:41 by sgouzi           ###   ########.fr       */
+/*   Updated: 2024/04/24 23:33:11 by sgouzi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,14 +91,13 @@ void	execute_cmd_hd(t_pipex *pipex, int i, t_node **gc)
 		handle_cmd_path_hd(pipex, i, gc, cmd_args);
 }
 
-void	setup_hd(t_pipex *pipex, char *av[], char *env[], t_node **gc)
+void	setup_hd(t_pipex *pipex, t_node **gc, int ac, char *av[])
 {
 	int	**fds;
 	int	i;
 
-	pipex->n_cmds = 2;
-	pipex->env = env;
-	pipex->cmds = gc_malloc(gc, (sizeof(char *) * 2));
+	pipex->n_cmds = ac - 4;
+	pipex->cmds = gc_malloc(gc, (sizeof(char *) * pipex->n_cmds));
 	pipex->cmds[0] = ft_strdup(av[3], gc);
 	pipex->cmds[1] = ft_strdup(av[4], gc);
 	pipex->pids = gc_malloc(gc, sizeof(int) * 2);
@@ -115,6 +114,7 @@ void	setup_hd(t_pipex *pipex, char *av[], char *env[], t_node **gc)
 	pipex->infile = NULL;
 	pipex->infile_fd = 0;
 	pipex->outfile_fd = open(pipex->outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	pipex->is_here_doc = 1;
 
 }
 
@@ -139,7 +139,7 @@ void	handle_here_doc(int ac, char *av[], char *env[], t_node **gc)
 	int		id;
 	t_pipex	pipex;
 
-	setup_hd(&pipex, av, env, gc);
+	setup_hd(&pipex, gc, ac, av);
 	line = get_next_line(0, gc);
 	while (ft_strcmp(line, ft_strjoin(av[2], "\n", gc)) != 0)
 	{

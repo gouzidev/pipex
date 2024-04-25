@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipex.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sgouzi <sgouzi@student.1337.ma>            +#+  +:+       +#+        */
+/*   By: sgouzi <sgouzi@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 18:09:28 by sgouzi            #+#    #+#             */
-/*   Updated: 2024/04/23 22:10:05 by sgouzi           ###   ########.fr       */
+/*   Updated: 2024/04/25 02:45:10 by sgouzi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,12 +58,13 @@ void	execute_here_doc_cmd(t_pipex *pipex, int i, t_node **gc)
 		handle_cmd_path(pipex, i, gc, cmd_args);
 }
 
-void	child(t_pipex *pipex, int i, t_node **gc)
+void close_unused_files(int i, t_pipex *pipex)
 {
-	close_unused_pipes(pipex->pipes, i, pipex->n_pips);
 	if (i == 0)
 	{
 		close(pipex->outfile_fd);
+		if (pipex->is_here_doc)
+			close(pipex->infile_fd);
 	}
 	else if (i == pipex->n_cmds - 1)
 	{
@@ -77,6 +78,12 @@ void	child(t_pipex *pipex, int i, t_node **gc)
 		if (pipex->outfile_fd != -1)
 			close(pipex->outfile_fd);
 	}
+}
+
+void	child(t_pipex *pipex, int i, t_node **gc)
+{
+	close_unused_pipes(pipex, pipex->pipes, i, pipex->n_pips);
+	close_unused_files(i, pipex);
 	execute_cmd(pipex, i, gc);
 }
 
@@ -116,10 +123,14 @@ int	main(int ac, char *av[], char *env[])
 	int				i;
 	int				id;
 
-	check_args(ac, av, env, &gc);
+	if (ac < 5)
+		(write(2, "usage: ./pipex file1 cmd1 cmd2 cmd3 ... cmdn file2\n", 52), exit(1));
+	if (ft_strncmp(av[1], "here_doc", 9) == 0)
+		setup_hd(&pipex, &gc, ac, av);
+	else
+		setup(&pipex, &gc, ac, av);
 	gc = gc_init();
 	pipex.env = env;
-	setup(&pipex, &gc, ac, av);
 	i = 0;
 	while (i < pipex.n_cmds)
 	{

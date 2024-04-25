@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sgouzi <sgouzi@student.1337.ma>            +#+  +:+       +#+        */
+/*   By: sgouzi <sgouzi@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 18:08:21 by sgouzi            #+#    #+#             */
-/*   Updated: 2024/04/23 22:33:58 by sgouzi           ###   ########.fr       */
+/*   Updated: 2024/04/25 02:54:21 by sgouzi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,14 +54,16 @@ void	handle_unkown_cmd(t_pipex *pipex, char **cmd_args, int i, t_node **gc)
 
 void	handle_dup(t_pipex *pipex, int i)
 {
-	printf("cmd %d  => %s\n", i, pipex->cmds[i]);
-	printf("infile_fd %d\n", pipex->infile_fd);
-	printf("cmds %i\n", pipex->n_cmds);
 	if (i == 0)
 	{
-		if (pipex->infile_fd == -1)
-			handle_infile(pipex);
-		dup2(pipex->infile_fd, STDIN_FILENO);
+		if (!pipex->is_here_doc)
+		{
+			if (pipex->infile_fd == -1)
+				handle_infile(pipex);
+			dup2(pipex->infile_fd, STDIN_FILENO);
+		}
+		else
+			dup2(pipex->pipes[i][0], STDIN_FILENO);
 		dup2(pipex->pipes[i][1], STDOUT_FILENO);
 	}
 	else if (i != pipex->n_cmds - 1)
@@ -71,7 +73,6 @@ void	handle_dup(t_pipex *pipex, int i)
 	}
 	else
 	{
-		printf("outfile_fd %d\n", pipex->outfile_fd);
 		dup2(pipex->outfile_fd, STDOUT_FILENO);
 		dup2(pipex->pipes[i - 1][0], STDIN_FILENO);
 	}
