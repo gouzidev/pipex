@@ -6,7 +6,7 @@
 /*   By: sgouzi <sgouzi@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 18:09:28 by sgouzi            #+#    #+#             */
-/*   Updated: 2024/04/25 02:45:10 by sgouzi           ###   ########.fr       */
+/*   Updated: 2024/04/25 14:48:08 by sgouzi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,7 +140,7 @@ int	main(int ac, char *av[], char *env[])
 		else if (id == -1)
 			(gc_clear(&gc), perror("fork"), exit(1));
 		else
-			pipex.pids[i] = id;
+			pipex.pids[i] = id;		
 		i++;
 	}
 	parent(&pipex, &gc, 0);

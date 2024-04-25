@@ -6,7 +6,7 @@
 /*   By: sgouzi <sgouzi@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 18:09:22 by sgouzi            #+#    #+#             */
-/*   Updated: 2024/04/24 23:33:11 by sgouzi           ###   ########.fr       */
+/*   Updated: 2024/04/25 14:47:46 by sgouzi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,8 @@ void	handle_dup_hd(t_pipex *pipex, int i)
 	fds = pipex->pipes;
 	if (i == 0)
 	{
-		dup2(fds[0][0], STDIN_FILENO);
-		dup2(fds[1][1], STDOUT_FILENO);
+		dup2(fds[0][0], 0);
+		dup2(fds[1][1], 1);
 		close(fds[0][1]);
 		close(fds[1][0]);
 	}
@@ -29,8 +29,8 @@ void	handle_dup_hd(t_pipex *pipex, int i)
 		pipex->outfile_fd = open(pipex->outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 		if (pipex->outfile_fd == -1 && access(pipex->outfile, X_OK) == -1)
 			(ft_printf("permission denied: %s\n", pipex->outfile), exit(1));
-		dup2(fds[1][0], STDIN_FILENO);
-		dup2(pipex->outfile_fd, STDOUT_FILENO);
+		dup2(fds[1][0], 0);
+		dup2(pipex->outfile_fd, 1);
 		close(fds[0][1]);
 		close(fds[0][0]);
 		close(fds[1][1]);
@@ -95,27 +95,29 @@ void	setup_hd(t_pipex *pipex, t_node **gc, int ac, char *av[])
 {
 	int	**fds;
 	int	i;
-
+	char	*line;
+	pipex->status = 0;
 	pipex->n_cmds = ac - 4;
-	pipex->cmds = gc_malloc(gc, (sizeof(char *) * pipex->n_cmds));
-	pipex->cmds[0] = ft_strdup(av[3], gc);
-	pipex->cmds[1] = ft_strdup(av[4], gc);
+	pipex->n_pips = pipex->n_cmds - 1;
+	printf("n_cmds: %d\n", pipex->n_cmds);
+	printf("n_pips: %d\n", pipex->n_pips);
 	pipex->pids = gc_malloc(gc, sizeof(int) * 2);
 	pipex->status = 0;
-	pipex->pipes = gc_malloc(gc, (sizeof(int *) * 2));
-	fds = pipex->pipes;
-	fds[0] = gc_malloc(gc, sizeof(int) * 2);
-	fds[1] = gc_malloc(gc, sizeof(int) * 2);
-	if (pipe(fds[0]) == -1)
-		(gc_clear(gc), perror("pipe"), exit(1));
-	if (pipe(fds[1]) == -1)
-		(gc_clear(gc), perror("pipe"), exit(1));
-	pipex->outfile = av[5];
+	pipex->cmds = parse_commands(pipex, gc, ac, av);
+	pipex->pipes = init_pipes(pipex, gc, pipex->n_cmds);
+	pipex->outfile = av[ac - 1];
 	pipex->infile = NULL;
 	pipex->infile_fd = 0;
 	pipex->outfile_fd = open(pipex->outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	pipex->is_here_doc = 1;
-
+	handle_status(pipex, ac, av);
+	
+	line = get_next_line(0, gc);
+	while (ft_strcmp(line, ft_strjoin(av[2], "\n", gc)) != 0)
+	{
+		write(pipex->pipes[0][1], line, len(line));
+		line = get_next_line(0, gc);
+	}
 }
 
 void	clean_hd(t_pipex pipex, t_node **gc, int status)

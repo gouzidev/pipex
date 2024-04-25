@@ -6,7 +6,7 @@
 /*   By: sgouzi <sgouzi@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 18:09:21 by sgouzi            #+#    #+#             */
-/*   Updated: 2024/04/24 23:36:48 by sgouzi           ###   ########.fr       */
+/*   Updated: 2024/04/25 13:44:48 by sgouzi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,10 +22,10 @@ void	setup(t_pipex *pipex, t_node **gc, int ac, char *av[])
 	pipex->pids = gc_malloc(gc, (pipex->n_cmds * sizeof(int)));
 	pipex->cmds = parse_commands(pipex, gc, ac, av);
 	pipex->pipes = init_pipes(pipex, gc, pipex->n_cmds);
-	pipex->is_here_doc = 0;
 	pipex->infile_fd = open(av[1], O_RDONLY);
 	pipex->outfile_fd = open(av[ac - 1], O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	handle_status(pipex, ac, av);
+	pipex->is_here_doc = 0;
 }
 
 void	handle_infile(t_pipex *pipex)
@@ -40,7 +40,7 @@ void	handle_infile(t_pipex *pipex)
 			perror("open");
 			exit(1);
 		}
-		dup2(fd_null, STDIN_FILENO);
+		dup2(fd_null, 0);
 		close(pipex->infile_fd);
 		close(fd_null);
 		pipex->status = 0;

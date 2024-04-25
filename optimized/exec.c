@@ -6,7 +6,7 @@
 /*   By: sgouzi <sgouzi@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 18:08:21 by sgouzi            #+#    #+#             */
-/*   Updated: 2024/04/25 02:54:21 by sgouzi           ###   ########.fr       */
+/*   Updated: 2024/04/25 13:37:22 by sgouzi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,25 +56,29 @@ void	handle_dup(t_pipex *pipex, int i)
 {
 	if (i == 0)
 	{
-		if (!pipex->is_here_doc)
+		if (pipex->infile_fd == -1)
+			handle_infile(pipex);
+		if (pipex->is_here_doc)
 		{
-			if (pipex->infile_fd == -1)
-				handle_infile(pipex);
-			dup2(pipex->infile_fd, STDIN_FILENO);
+			close(pipex->infile_fd);
+			dup2(pipex->pipes[i][0], 0);
+			dup2(pipex->pipes[i][1], 1);
 		}
 		else
-			dup2(pipex->pipes[i][0], STDIN_FILENO);
-		dup2(pipex->pipes[i][1], STDOUT_FILENO);
+		{
+			dup2(pipex->infile_fd, 0);
+			dup2(pipex->pipes[i][1], 1);
+		}
 	}
 	else if (i != pipex->n_cmds - 1)
 	{
-		dup2(pipex->pipes[i - 1][0], STDIN_FILENO);
-		dup2(pipex->pipes[i][1], STDOUT_FILENO);
+		dup2(pipex->pipes[i - 1][0], 0);
+		dup2(pipex->pipes[i][1], 1);
 	}
 	else
 	{
-		dup2(pipex->outfile_fd, STDOUT_FILENO);
-		dup2(pipex->pipes[i - 1][0], STDIN_FILENO);
+		dup2(pipex->outfile_fd, 1);
+		dup2(pipex->pipes[i - 1][0], 0);
 	}
 }
 
