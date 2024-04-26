@@ -28,16 +28,16 @@ void read_hd(t_pipex *pipex, t_node **gc, int ac, char *av[])
 void	setup_hd(t_pipex *pipex, t_node **gc, int ac, char *av[])
 {
 	pipex->is_here_doc = 1;
+	pipex->outfile = av[ac - 1];
+	pipex->infile = NULL;
 	pipex->cmds = parse_commands(pipex, gc, ac, av);
 	pipex->pipes = init_pipes(pipex, gc, pipex->n_cmds);
 	pipex->pids = gc_malloc(gc, (pipex->n_cmds * sizeof(int)));
 	pipex->status = 0;
-	pipex->outfile = av[ac - 1];
-	pipex->infile = NULL;
-	pipex->infile_fd = 0;
-	pipex->outfile_fd = open(pipex->outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-	handle_status(pipex, ac, av);
 	read_hd(pipex, gc, ac, av);
+	dup2(pipex->here_doc_fd[0], pipex->infile_fd);
+	close(pipex->here_doc_fd[0]);
+	close(pipex->here_doc_fd[1]);
 }
 
 void	setup(t_pipex *pipex, t_node **gc, int ac, char *av[])
@@ -45,6 +45,8 @@ void	setup(t_pipex *pipex, t_node **gc, int ac, char *av[])
 	t_node	*new_node;
 
 	pipex->is_here_doc = 0;
+	pipex->outfile = av[ac - 1];
+	pipex->infile = av[1];
 	pipex->cmds = parse_commands(pipex, gc, ac, av);
 	pipex->pipes = init_pipes(pipex, gc, pipex->n_cmds);
 	pipex->pids = gc_malloc(gc, (pipex->n_cmds * sizeof(int)));

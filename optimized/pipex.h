@@ -54,6 +54,10 @@ char				*ft_strjoin_gnl(char *left_str, char *buff, t_node **gc);
 char				*ft_get_line(char *left_str, t_node **gc);
 char				*get_rest(char *left_str, t_node **gc);
 
+/* family.c */
+void	child(t_pipex *pipex, int i, t_node **gc);
+void	parent(t_pipex *pipex, t_node **gc, int hd_flag);
+
 /* split.c */
 int					count_words(char const *s1, char c);
 char				**handle_null_malloc(char const *s, char c, t_node **gc);
@@ -63,8 +67,8 @@ char				**ft_split(char const *s, char c, t_node **gc);
 void				handle_infile(t_pipex *pipex);
 void				handle_status(t_pipex *pipex, int ac, char *av[]);
 void				setup(t_pipex *pipex, t_node **gc, int ac, char *av[]);
-void read_hd(t_pipex *pipex, t_node **gc, int ac, char *av[]);
-
+void				read_hd(t_pipex *pipex, t_node **gc, int ac, char *av[]);
+void				ft_close(int fd, t_node **gc);
 /* pipex.c */
 int					main(int ac, char *av[], char *env[]);
 char				**parse_commands(t_pipex *pipex, t_node **gc, int ac,
