@@ -67,9 +67,7 @@ void	handle_infile(t_pipex *pipex)
 			exit(1);
 		}
 		dup2(fd_null, 0);
-		close(pipex->infile_fd);
-		close(fd_null);
-		pipex->status = 0;
+		pipex->infile_fd = fd_null;
 	}
 }
 
