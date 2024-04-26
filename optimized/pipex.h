@@ -43,6 +43,7 @@ typedef struct s_pipex
 	char			**env;
 	int				status;
 	int				is_here_doc;
+	int 			here_doc_fd[2];
 
 }					t_pipex;
 
@@ -62,7 +63,6 @@ char				**ft_split(char const *s, char c, t_node **gc);
 void				handle_infile(t_pipex *pipex);
 void				handle_status(t_pipex *pipex, int ac, char *av[]);
 void				setup(t_pipex *pipex, t_node **gc, int ac, char *av[]);
-void				check_args(int ac, char *av[], char *env[], t_node **gc);
 
 /* pipex.c */
 int					main(int ac, char *av[], char *env[]);
@@ -81,7 +81,7 @@ int					ft_strncmp(const char *s1, const char *s2, size_t n);
 
 /* pipe.c */
 int					**init_pipes(t_pipex *pipex, t_node **gc, int n_cmds);
-void				close_allthe_pipes(int **pipes);
+void				close_allthe_pipes(t_pipex *pipex, int **pipes);
 void				close_unused_pipes(t_pipex *pipex, int **pipes, int process_index,
 						int n_pips);
 

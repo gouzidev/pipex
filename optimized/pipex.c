@@ -20,7 +20,6 @@ char	**parse_commands(t_pipex *pipex, t_node **gc, int ac, char *av[])
 	if (pipex->is_here_doc)
 	{
 		pipex->n_cmds = ac - 4;
-		pipex->n_pips = pipex->n_cmds;
 		cmds = (char **)gc_malloc(gc, (ac - 3) * sizeof(char *));
 		i = 2;
 		while (++i < ac - 1)
@@ -30,13 +29,13 @@ char	**parse_commands(t_pipex *pipex, t_node **gc, int ac, char *av[])
 	else
 	{
 		pipex->n_cmds = ac - 3;
-		pipex->n_pips = pipex->n_cmds - 1;
 		cmds = (char **)gc_malloc(gc, (ac - 2) * sizeof(char *));
 		i = 1;
 		while (++i < ac - 1)
 			cmds[i - 2] = ft_strdup(av[i], gc);
 		cmds[i - 2] = NULL;
 	}
+	pipex->n_pips = pipex->n_cmds - 1;
 	return (cmds);
 }
 
@@ -107,7 +106,7 @@ void	parent(t_pipex *pipex, t_node **gc, int hd_flag)
 	{
 		if (pipex->outfile_fd != -1)
 			close(pipex->outfile_fd);
-		close_allthe_pipes(pipex->pipes);
+		close_allthe_pipes(pipex, pipex->pipes);
 	}
 	i = 0;
 	while (i < pipex->n_cmds)

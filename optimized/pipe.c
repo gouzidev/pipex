@@ -34,7 +34,7 @@ int	**init_pipes(t_pipex *pipex, t_node **gc, int n_cmds)
 	return (pipes);
 }
 
-void	close_allthe_pipes(int **pipes)
+void	close_allthe_pipes(t_pipex *pipex, int **pipes)
 {
 	int	i;
 
@@ -45,50 +45,41 @@ void	close_allthe_pipes(int **pipes)
 		close(pipes[i][1]);
 		i++;
 	}
-}
-
-void	close_unused_pipes_hd(t_pipex *pipex, int **pipes, int process_index, int n_pips)
-{
-	int	i;
-
-	i = 0;
-	while (i < n_pips)
-	{
-		if (process_index != i)
-			close(pipes[i][0]);
-		if (process_index != i + 1)
-			close(pipes[i][1]);
-		i++;
-	}
+	close(pipex->here_doc_fd[0]);
+	close(pipex->here_doc_fd[1]);
 }
 
 void	close_unused_pipes(t_pipex *pipex, int **pipes, int process_index, int n_pips)
 {
-	int	i;
+	int	p;
 
-	i = 0;
-	while (i < n_pips)
+	p = 0;
+	while (p < n_pips)
 	{
 		if (process_index == 0)
 		{
-			if (i != 0)
-				close(pipes[i][1]);
-			if (!pipex->is_here_doc)
-				close(pipes[i][0]);
+			if (p != 0)
+				close(pipes[p][1]);
+			close(pipes[p][0]);
+			close(pipex->here_doc_fd[1]);
 		}
 		else if (process_index != n_pips)
 		{
-			if (process_index != i + 1)
-				close(pipes[i][0]);
-			if (process_index != i)
-				close(pipes[i][1]);
+			if (process_index != p + 1)
+				close(pipes[p][0]);
+			if (process_index != p)
+				close(pipes[p][1]);
+				close(pipex->here_doc_fd[0]);
+				close(pipex->here_doc_fd[1]);
 		}
 		else
 		{
-			if (i != process_index - 1)
-				close(pipes[i][0]);
-			close(pipes[i][1]);
+			if (p != process_index - 1)
+				close(pipes[p][0]);
+			close(pipes[p][1]);
+			close(pipex->here_doc_fd[0]);
+			close(pipex->here_doc_fd[1]);
 		}
-		i++;
+		p++;
 	}
 }

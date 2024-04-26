@@ -12,6 +12,34 @@
 
 #include "pipex.h"
 
+void	setup_hd(t_pipex *pipex, t_node **gc, int ac, char *av[])
+{
+	int	**fds;
+	int	i;
+	char	*line;
+	pipex->is_here_doc = 1;
+	pipex->cmds = parse_commands(pipex, gc, ac, av);
+	pipex->status = 0;
+	printf("n_cmds: %d\n", pipex->n_cmds);
+	printf("n_pips: %d\n", pipex->n_pips);
+	pipex->pids = gc_malloc(gc, sizeof(int) * 2);
+	pipex->status = 0;
+	pipex->pipes = init_pipes(pipex, gc, pipex->n_cmds);
+	pipex->outfile = av[ac - 1];
+	pipex->infile = NULL;
+	pipex->infile_fd = 0;
+	pipex->outfile_fd = open(pipex->outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	handle_status(pipex, ac, av);
+
+	pipe(pipex->here_doc_fd);
+	line = get_next_line(0, gc);
+	while (ft_strcmp(line, ft_strjoin(av[2], "\n", gc)) != 0)
+	{
+		write(pipex->here_doc_fd[1], line, len(line));
+		line = get_next_line(0, gc);
+	}
+}
+
 void	setup(t_pipex *pipex, t_node **gc, int ac, char *av[])
 {
 	t_node	*new_node;
@@ -60,19 +88,5 @@ void	handle_status(t_pipex *pipex, int ac, char *av[])
 		perror(av[ac - 1]);
 		pipex->status = 1;
 		exit(1);
-	}
-}
-
-void check_args(int ac, char *av[], char *env[], t_node **gc)
-{
-	if (ac < 5)
-		(write(2, "usage: ./pipex file1 cmd1 cmd2 cmd3 ... cmdn file2\n", 52),
-			exit(1));
-	if (ft_strncmp(av[1], "here_doc", 9) == 0)
-	{
-		if (ac == 6)
-			(handle_here_doc(ac, av, env, gc), exit(0));
-		(write(2, "usage: ./pipex here_doc LIMITER cmd cmd1 file\n", 47),
-			exit(1));
 	}
 }
