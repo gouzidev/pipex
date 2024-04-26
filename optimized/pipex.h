@@ -63,6 +63,7 @@ char				**ft_split(char const *s, char c, t_node **gc);
 void				handle_infile(t_pipex *pipex);
 void				handle_status(t_pipex *pipex, int ac, char *av[]);
 void				setup(t_pipex *pipex, t_node **gc, int ac, char *av[]);
+void read_hd(t_pipex *pipex, t_node **gc, int ac, char *av[]);
 
 /* pipex.c */
 int					main(int ac, char *av[], char *env[]);
