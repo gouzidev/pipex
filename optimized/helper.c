@@ -36,8 +36,6 @@ void	setup_hd(t_pipex *pipex, t_node **gc, int ac, char *av[])
 	pipex->status = 0;
 	read_hd(pipex, gc, ac, av);
 	dup2(pipex->here_doc_fd[0], pipex->infile_fd);
-	close(pipex->here_doc_fd[0]);
-	close(pipex->here_doc_fd[1]);
 }
 
 void	setup(t_pipex *pipex, t_node **gc, int ac, char *av[])

@@ -7,18 +7,17 @@ void	child(t_pipex *pipex, int i, t_node **gc)
 	execute_cmd(pipex, i, gc);
 }
 
-void	parent(t_pipex *pipex, t_node **gc, int hd_flag)
+void	parent(t_pipex *pipex, t_node **gc)
 {
 	int	i;
 	int	status;
 	int	terminated_pid;
 
-	if (!hd_flag)
-	{
-		if (pipex->outfile_fd != -1)
-			close(pipex->outfile_fd);
-		close_allthe_pipes(pipex, pipex->pipes);
-	}
+	if (pipex->outfile_fd != -1)
+		close(pipex->outfile_fd);
+	if (pipex->infile_fd != -1)
+		close(pipex->infile_fd);
+	close_allthe_pipes(pipex, pipex->pipes);
 	i = 0;
 	while (i < pipex->n_cmds)
 	{

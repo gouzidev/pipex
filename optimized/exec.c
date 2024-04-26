@@ -56,11 +56,6 @@ void	handle_dup(t_pipex *pipex, int i)
 {
 	if (i == 0)
 	{
-		if (pipex->infile_fd == -1)
-		{
-			printf("pipex->infile_fd: %d\n", pipex->infile_fd);
-			handle_infile(pipex);
-		}
 		dup2(pipex->infile_fd, 0);
 		dup2(pipex->pipes[i][1], 1);
 	}

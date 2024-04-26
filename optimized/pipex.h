@@ -56,7 +56,7 @@ char				*get_rest(char *left_str, t_node **gc);
 
 /* family.c */
 void	child(t_pipex *pipex, int i, t_node **gc);
-void	parent(t_pipex *pipex, t_node **gc, int hd_flag);
+void	parent(t_pipex *pipex, t_node **gc);
 
 /* split.c */
 int					count_words(char const *s1, char c);
@@ -69,11 +69,11 @@ void				handle_status(t_pipex *pipex, int ac, char *av[]);
 void				setup(t_pipex *pipex, t_node **gc, int ac, char *av[]);
 void				read_hd(t_pipex *pipex, t_node **gc, int ac, char *av[]);
 void				ft_close(int fd, t_node **gc);
+void				close_here_doc_fd(t_pipex *pipex);
 /* pipex.c */
 int					main(int ac, char *av[], char *env[]);
 char				**parse_commands(t_pipex *pipex, t_node **gc, int ac,
 						char *av[]);
-void				parent(t_pipex *pipex, t_node **gc, int hd_flag);
 void				close_unused_files(int i, t_pipex *pipex);
 /* str.c */
 int					ft_strcmp(const char *s1, const char *s2);

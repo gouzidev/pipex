@@ -26,7 +26,7 @@ int	**init_pipes(t_pipex *pipex, t_node **gc, int n_cmds)
 		{
 			gc_clear(gc);
 			perror("pipe");
-			exit(5);
+			exit(1);
 		}
 		i++;
 	}
@@ -48,7 +48,14 @@ void	close_allthe_pipes(t_pipex *pipex, int **pipes)
 	close(pipex->here_doc_fd[0]);
 	close(pipex->here_doc_fd[1]);
 	close(pipex->infile_fd);
+	close(pipex->outfile_fd);
 	
+}
+
+void close_here_doc_fd(t_pipex *pipex)
+{
+	close(pipex->here_doc_fd[0]);
+	close(pipex->here_doc_fd[1]);
 }
 
 void	close_unused_pipes(t_pipex *pipex, int **pipes, int process_index, int n_pips)
@@ -91,8 +98,7 @@ void close_unused_files(int i, t_pipex *pipex)
 {
 	if (i == 0)
 	{
-		close(pipex->outfile_fd);
-		// if (pipex->is_here_doc)
+		// close(pipex->outfile_fd);
 	}
 	else if (i == pipex->n_cmds - 1)
 	{

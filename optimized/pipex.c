@@ -39,8 +39,6 @@ char	**parse_commands(t_pipex *pipex, t_node **gc, int ac, char *av[])
 	return (cmds);
 }
 
-
-
 int	main(int ac, char *av[], char *env[])
 {
 	struct s_pipex	pipex;
@@ -61,15 +59,13 @@ int	main(int ac, char *av[], char *env[])
 	{
 		id = fork();
 		if (id == 0)
-		{
 			child(&pipex, i, &gc);
-		}
 		else if (id == -1)
 			(gc_clear(&gc), perror("fork"), exit(1));
 		else
 			pipex.pids[i] = id;		
 		i++;
 	}
-	parent(&pipex, &gc, 0);
+	parent(&pipex, &gc);
 	return (0);
 }
