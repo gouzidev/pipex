@@ -16,16 +16,14 @@ void	setup(t_pipex *pipex, t_node **gc, int ac, char *av[])
 {
 	t_node	*new_node;
 
-	pipex->status = 0;
-	pipex->n_cmds = ac - 3;
-	pipex->n_pips = pipex->n_cmds - 1;
-	pipex->pids = gc_malloc(gc, (pipex->n_cmds * sizeof(int)));
+	pipex->is_here_doc = 0;
 	pipex->cmds = parse_commands(pipex, gc, ac, av);
+	pipex->status = 0;
+	pipex->pids = gc_malloc(gc, (pipex->n_cmds * sizeof(int)));
 	pipex->pipes = init_pipes(pipex, gc, pipex->n_cmds);
 	pipex->infile_fd = open(av[1], O_RDONLY);
 	pipex->outfile_fd = open(av[ac - 1], O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	handle_status(pipex, ac, av);
-	pipex->is_here_doc = 0;
 }
 
 void	handle_infile(t_pipex *pipex)

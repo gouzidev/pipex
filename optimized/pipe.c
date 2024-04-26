@@ -47,6 +47,21 @@ void	close_allthe_pipes(int **pipes)
 	}
 }
 
+void	close_unused_pipes_hd(t_pipex *pipex, int **pipes, int process_index, int n_pips)
+{
+	int	i;
+
+	i = 0;
+	while (i < n_pips)
+	{
+		if (process_index != i)
+			close(pipes[i][0]);
+		if (process_index != i + 1)
+			close(pipes[i][1]);
+		i++;
+	}
+}
+
 void	close_unused_pipes(t_pipex *pipex, int **pipes, int process_index, int n_pips)
 {
 	int	i;

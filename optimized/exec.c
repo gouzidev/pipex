@@ -56,11 +56,10 @@ void	handle_dup(t_pipex *pipex, int i)
 {
 	if (i == 0)
 	{
-		if (pipex->infile_fd == -1)
-			handle_infile(pipex);
+		// if (pipex->infile_fd == -1)
+		// 	handle_infile(pipex);
 		if (pipex->is_here_doc)
 		{
-			close(pipex->infile_fd);
 			dup2(pipex->pipes[i][0], 0);
 			dup2(pipex->pipes[i][1], 1);
 		}

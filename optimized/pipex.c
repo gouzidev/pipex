@@ -16,17 +16,27 @@ char	**parse_commands(t_pipex *pipex, t_node **gc, int ac, char *av[])
 {
 	char	**cmds;
 	int		i;
-	int		n_cmds;
 
-	n_cmds = ac - 3;
-	cmds = (char **)gc_malloc(gc, (ac - 2) * sizeof(char *));
-	i = 2;
-	while (i < ac - 1)
+	if (pipex->is_here_doc)
 	{
-		cmds[i - 2] = ft_strdup(av[i], gc);
-		i++;
+		pipex->n_cmds = ac - 4;
+		pipex->n_pips = pipex->n_cmds;
+		cmds = (char **)gc_malloc(gc, (ac - 3) * sizeof(char *));
+		i = 2;
+		while (++i < ac - 1)
+			cmds[i - 3] = ft_strdup(av[i], gc);
+		cmds[i - 3] = NULL;
 	}
-	cmds[i - 2] = NULL;
+	else
+	{
+		pipex->n_cmds = ac - 3;
+		pipex->n_pips = pipex->n_cmds - 1;
+		cmds = (char **)gc_malloc(gc, (ac - 2) * sizeof(char *));
+		i = 1;
+		while (++i < ac - 1)
+			cmds[i - 2] = ft_strdup(av[i], gc);
+		cmds[i - 2] = NULL;
+	}
 	return (cmds);
 }
 

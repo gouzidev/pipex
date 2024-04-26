@@ -96,20 +96,18 @@ void	setup_hd(t_pipex *pipex, t_node **gc, int ac, char *av[])
 	int	**fds;
 	int	i;
 	char	*line;
+	pipex->is_here_doc = 1;
+	pipex->cmds = parse_commands(pipex, gc, ac, av);
 	pipex->status = 0;
-	pipex->n_cmds = ac - 4;
-	pipex->n_pips = pipex->n_cmds - 1;
 	printf("n_cmds: %d\n", pipex->n_cmds);
 	printf("n_pips: %d\n", pipex->n_pips);
 	pipex->pids = gc_malloc(gc, sizeof(int) * 2);
 	pipex->status = 0;
-	pipex->cmds = parse_commands(pipex, gc, ac, av);
 	pipex->pipes = init_pipes(pipex, gc, pipex->n_cmds);
 	pipex->outfile = av[ac - 1];
 	pipex->infile = NULL;
 	pipex->infile_fd = 0;
 	pipex->outfile_fd = open(pipex->outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-	pipex->is_here_doc = 1;
 	handle_status(pipex, ac, av);
 	
 	line = get_next_line(0, gc);
