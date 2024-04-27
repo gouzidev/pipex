@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pipe_bonus.c                                       :+:      :+:    :+:   */
+/*   pipe.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sgouzi <sgouzi@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 18:09:27 by sgouzi            #+#    #+#             */
-/*   Updated: 2024/04/27 22:20:48 by sgouzi           ###   ########.fr       */
+/*   Updated: 2024/04/27 22:32:34 by sgouzi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "pipex_bonus.h"
+#include "pipex.h"
 
 int	**init_pipes(t_node **gc, int n_cmds)
 {
@@ -45,19 +45,7 @@ void	close_allthe_pipes(t_pipex *pipex, int **pipes, t_node **gc)
 		ft_close(pipes[i][1], gc);
 		i++;
 	}
-	close_here_doc_fd(pipex, gc);
 	ft_close(pipex->infile_fd, gc);
-}
-
-void	close_here_doc_fd(t_pipex *pipex, t_node **gc)
-{
-	if (pipex->is_here_doc)
-	{
-		ft_close(pipex->here_doc_fd[0], gc);
-		pipex->here_doc_fd[0] = -2;
-		ft_close(pipex->here_doc_fd[1], gc);
-		pipex->here_doc_fd[1] = -2;
-	}
 }
 
 void	close_unused_pipes(t_pipex *pipex, int process_index, t_node **gc)

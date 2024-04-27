@@ -1,17 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pipex_bonus.h                                      :+:      :+:    :+:   */
+/*   pipex.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sgouzi <sgouzi@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 18:09:30 by sgouzi            #+#    #+#             */
-/*   Updated: 2024/04/27 22:20:48 by sgouzi           ###   ########.fr       */
+/*   Updated: 2024/04/27 22:48:59 by sgouzi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef PIPEX_BONUS_H
-# define PIPEX_BONUS_H
+#ifndef PIPEX_H
+# define PIPEX_H
 
 # include <errno.h>
 # include <fcntl.h>
@@ -42,8 +42,6 @@ typedef struct s_pipex
 	char			**cmds;
 	char			**env;
 	int				status;
-	int				is_here_doc;
-	int				here_doc_fd[2];
 
 }					t_pipex;
 
@@ -70,7 +68,7 @@ void				check_outfile(t_pipex *pipex);
 void				setup(t_pipex *pipex, t_node **gc, int ac, char *av[]);
 void				read_hd(t_pipex *pipex, t_node **gc, char *av[]);
 void				ft_close(int fd, t_node **gc);
-void				close_here_doc_fd(t_pipex *pipex, t_node **gc);
+
 /* pipex.c */
 int					main(int ac, char *av[], char *env[]);
 char				**parse_commands(t_pipex *pipex, t_node **gc, int ac,

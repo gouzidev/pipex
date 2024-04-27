@@ -1,40 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pipex_bonus.c                                      :+:      :+:    :+:   */
+/*   pipex.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sgouzi <sgouzi@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 18:09:28 by sgouzi            #+#    #+#             */
-/*   Updated: 2024/04/27 22:20:48 by sgouzi           ###   ########.fr       */
+/*   Updated: 2024/04/27 22:33:20 by sgouzi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "pipex_bonus.h"
+#include "pipex.h"
 
 char	**parse_commands(t_pipex *pipex, t_node **gc, int ac, char *av[])
 {
 	char	**cmds;
 	int		i;
 
-	if (pipex->is_here_doc)
-	{
-		pipex->n_cmds = ac - 4;
-		cmds = (char **)gc_malloc(gc, (ac - 3) * sizeof(char *));
-		i = 2;
-		while (++i < ac - 1)
-			cmds[i - 3] = ft_strdup(av[i], gc);
-		cmds[i - 3] = NULL;
-	}
-	else
-	{
-		pipex->n_cmds = ac - 3;
-		cmds = (char **)gc_malloc(gc, (ac - 2) * sizeof(char *));
-		i = 1;
-		while (++i < ac - 1)
-			cmds[i - 2] = ft_strdup(av[i], gc);
-		cmds[i - 2] = NULL;
-	}
+	pipex->n_cmds = ac - 3;
+	cmds = (char **)gc_malloc(gc, (ac - 2) * sizeof(char *));
+	i = 1;
+	while (++i < ac - 1)
+		cmds[i - 2] = ft_strdup(av[i], gc);
+	cmds[i - 2] = NULL;
 	pipex->n_pips = pipex->n_cmds - 1;
 	return (cmds);
 }
@@ -71,7 +59,6 @@ void	child(t_pipex *pipex, int i, t_node **gc)
 {
 	close_unused_pipes(pipex, i, gc);
 	close_unused_files(i, pipex, gc);
-	close_here_doc_fd(pipex, gc);
 	execute_cmd(pipex, i, gc);
 }
 
