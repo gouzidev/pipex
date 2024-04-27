@@ -46,13 +46,13 @@ int	main(int ac, char *av[], char *env[])
 	int				i;
 	int				id;
 
+	gc = gc_init();
 	if (ac < 5)
 		(write(2, "usage: ./pipex file1 cmd1 cmd2 cmd3 ... cmdn file2\n", 52), exit(1));
 	if (ft_strncmp(av[1], "here_doc", 9) == 0)
 		setup_hd(&pipex, &gc, ac, av);
 	else
 		setup(&pipex, &gc, ac, av);
-	gc = gc_init();
 	pipex.env = env;
 	i = 0;
 	while (i < pipex.n_cmds)

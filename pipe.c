@@ -53,8 +53,10 @@ void close_here_doc_fd(t_pipex *pipex, t_node **gc)
 {
 	if (pipex->is_here_doc)
 	{
-		close(pipex->here_doc_fd[0]);
-		close(pipex->here_doc_fd[1]);
+		ft_close(pipex->here_doc_fd[0], gc);
+		pipex->here_doc_fd[0] = -2;
+		ft_close(pipex->here_doc_fd[1], gc);
+		pipex->here_doc_fd[1] = -2;
 	}
 }
 
@@ -68,23 +70,23 @@ void	close_unused_pipes(t_pipex *pipex, int **pipes, int process_index, t_node *
 		if (process_index == 0)
 		{
 			if (p != 0)
-				close(pipes[p][1]);
-			close(pipes[p][0]);
+				ft_close(pipes[p][1], gc);
+			ft_close(pipes[p][0], gc);
 			close_here_doc_fd(pipex, gc);
 		}
 		else if (process_index != pipex->n_pips)
 		{
 			if (process_index != p + 1)
-				close(pipes[p][0]);
+				ft_close(pipes[p][0], gc);
 			if (process_index != p)
-				close(pipes[p][1]);
+				ft_close(pipes[p][1], gc);
 			close_here_doc_fd(pipex, gc);
 		}
 		else
 		{
 			if (p != process_index - 1)
-				close(pipes[p][0]);
-			close(pipes[p][1]);
+				ft_close(pipes[p][0], gc);
+			ft_close(pipes[p][1], gc);
 			close_here_doc_fd(pipex, gc);
 		}
 		p++;
@@ -95,7 +97,6 @@ void close_unused_files(int i, t_pipex *pipex, t_node **gc)
 {
 	if (i == 0)
 	{
-		// close(pipex->outfile_fd);
 	}
 	else if (i == pipex->n_cmds - 1)
 	{

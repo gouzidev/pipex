@@ -56,8 +56,7 @@ void	handle_dup(t_pipex *pipex, int i)
 {
 	if (i == 0)
 	{
-		if (!pipex->is_here_doc)
-			dup2(pipex->infile_fd, 0);
+		dup2(pipex->infile_fd, 0);
 		dup2(pipex->pipes[i][1], 1);
 	}
 	else if (i != pipex->n_cmds - 1)
