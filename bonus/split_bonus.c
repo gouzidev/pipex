@@ -10,12 +10,14 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../pipex.h"
+#include "pipex_bonus.h"
 
 int	len(char *s1)
 {
 	int	l;
 
+	if (!s1)
+		return (0);
 	l = 0;
 	while (s1[l])
 		l++;

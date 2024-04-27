@@ -10,9 +10,9 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "pipex.h"
+#include "pipex_bonus.h"
 
-int	**init_pipes(t_pipex *pipex, t_node **gc, int n_cmds)
+int	**init_pipes(t_node **gc, int n_cmds)
 {
 	int	i;
 	int	**pipes;
@@ -60,36 +60,32 @@ void close_here_doc_fd(t_pipex *pipex, t_node **gc)
 	}
 }
 
-void	close_unused_pipes(t_pipex *pipex, int **pipes, int process_index, t_node **gc)
+void	close_unused_pipes(t_pipex *pipex, int process_index, t_node **gc)
 {
 	int	p;
 
-	p = 0;
-	while (p < pipex->n_pips)
+	p = -1;
+	while (++p < pipex->n_pips)
 	{
 		if (process_index == 0)
 		{
 			if (p != 0)
-				ft_close(pipes[p][1], gc);
-			ft_close(pipes[p][0], gc);
-			close_here_doc_fd(pipex, gc);
+				ft_close(pipex->pipes[p][1], gc);
+			ft_close(pipex->pipes[p][0], gc);
 		}
 		else if (process_index != pipex->n_pips)
 		{
 			if (process_index != p + 1)
-				ft_close(pipes[p][0], gc);
+				ft_close(pipex->pipes[p][0], gc);
 			if (process_index != p)
-				ft_close(pipes[p][1], gc);
-			close_here_doc_fd(pipex, gc);
+				ft_close(pipex->pipes[p][1], gc);
 		}
 		else
 		{
 			if (p != process_index - 1)
-				ft_close(pipes[p][0], gc);
-			ft_close(pipes[p][1], gc);
-			close_here_doc_fd(pipex, gc);
+				ft_close(pipex->pipes[p][0], gc);
+			ft_close(pipex->pipes[p][1], gc);
 		}
-		p++;
 	}
 }
 

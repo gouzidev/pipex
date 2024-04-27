@@ -1,21 +1,27 @@
 CC = cc
+
+CFLAGS = -Wall -Wextra -Werror
+
 NAME = pipex
-FLAGS = -Wall -Wextra -Werror
-LEAK = -fsanitize=address
 
-SRCS = pipex.c exec.c  family.c ./utils/split.c helper.c ./utils/path.c ./utils/str.c pipe.c ./utils/gc.c ./utils/gnl.c ./utils/printf.c
-OBJS = $(SRCS:.c=.o)
+BNAME = pipex_bonus
 
-all: $(OBJS)
-	$(CC)  $^ -o $(NAME)
-	rm -rf $(OBJS)
+BSRCS = ./bonus/pipex_bonus.c ./bonus/handle_bonus.c ./bonus/helper_bonus.c ./bonus/helper1_bonus.c ./bonus/split_bonus.c ./bonus/path_bonus.c ./bonus/str_bonus.c ./bonus/pipe_bonus.c ./bonus/gc_bonus.c ./bonus/gnl_bonus.c
+BSRCS = ./bonus/pipex_bonus.c ./bonus/handle_bonus.c ./bonus/helper_bonus.c ./bonus/helper1_bonus.c ./bonus/split_bonus.c ./bonus/path_bonus.c ./bonus/str_bonus.c ./bonus/pipe_bonus.c ./bonus/gc_bonus.c ./bonus/gnl_bonus.c
+
+BOBJS = $(BSRCS:.c=.o)
+
+BOBJS = $(BSRCS:.c=.o)
+all: $(BOBJS)
+	$(CC) $(CFLAGS) $^ -o $(BNAME)
+	rm -rf $(BOBJS)
 
 %o:%c
-	$(CC)  -c $<
+	$(CC) $(CFLAGS) -c $<
 re:	fclean all
 
 clean:
-	rm -rf $(OBJS)
+	rm -rf $(BOBJS)
 
 fclean:	clean
-	rm -rf $(NAME)%
+	rm -rf $(BNAME)%

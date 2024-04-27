@@ -6,8 +6,8 @@
       "type": "lldb",
       "request": "launch",
       "args": [],
-      "cwd": "/Users/sgouzi/Desktop/pipex",
-      "program": "/Users/sgouzi/Desktop/pipex/build/Debug/outDebug"
+      "cwd": "/home/sgouzi/Desktop/pipex",
+      "program": "/home/sgouzi/Desktop/pipex/build/Debug/outDebug"
     }
   ]
 }
