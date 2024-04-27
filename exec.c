@@ -56,7 +56,8 @@ void	handle_dup(t_pipex *pipex, int i)
 {
 	if (i == 0)
 	{
-		dup2(pipex->infile_fd, 0);
+		if (!pipex->is_here_doc)
+			dup2(pipex->infile_fd, 0);
 		dup2(pipex->pipes[i][1], 1);
 	}
 	else if (i != pipex->n_cmds - 1)
@@ -67,7 +68,7 @@ void	handle_dup(t_pipex *pipex, int i)
 	else
 	{
 		pipex->outfile_fd = open(pipex->outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-		// handle_status(pipex, ac, av);
+		check_outfile(pipex);
 		dup2(pipex->outfile_fd, 1);
 		dup2(pipex->pipes[i - 1][0], 0);
 	}

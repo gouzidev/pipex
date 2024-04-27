@@ -64,17 +64,18 @@ char				**handle_null_malloc(char const *s, char c, t_node **gc);
 char				**ft_split(char const *s, char c, t_node **gc);
 
 /* helper.c */
-void				handle_infile(t_pipex *pipex);
-void				handle_status(t_pipex *pipex, int ac, char *av[]);
+void				handle_infile(t_pipex *pipex, t_node **gc);
+void				check_infile(t_pipex *pipex);
+void				check_outfile(t_pipex *pipex);
 void				setup(t_pipex *pipex, t_node **gc, int ac, char *av[]);
 void				read_hd(t_pipex *pipex, t_node **gc, int ac, char *av[]);
 void				ft_close(int fd, t_node **gc);
-void				close_here_doc_fd(t_pipex *pipex);
+void				close_here_doc_fd(t_pipex *pipex, t_node **gc);
 /* pipex.c */
 int					main(int ac, char *av[], char *env[]);
 char				**parse_commands(t_pipex *pipex, t_node **gc, int ac,
 						char *av[]);
-void				close_unused_files(int i, t_pipex *pipex);
+void				close_unused_files(int i, t_pipex *pipex, t_node **gc);
 /* str.c */
 int					ft_strcmp(const char *s1, const char *s2);
 int					len(char *str);
@@ -86,9 +87,8 @@ int					ft_strncmp(const char *s1, const char *s2, size_t n);
 
 /* pipe.c */
 int					**init_pipes(t_pipex *pipex, t_node **gc, int n_cmds);
-void				close_allthe_pipes(t_pipex *pipex, int **pipes);
-void				close_unused_pipes(t_pipex *pipex, int **pipes, int process_index,
-						int n_pips);
+void				close_allthe_pipes(t_pipex *pipex, int **pipes, t_node **gc);
+void				close_unused_pipes(t_pipex *pipex, int **pipes, int process_index, t_node **gc);
 
 /* gc.c */
 void				*gc_malloc(t_node **gc, size_t size);

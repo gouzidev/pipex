@@ -2,8 +2,8 @@
 
 void	child(t_pipex *pipex, int i, t_node **gc)
 {
-	close_unused_pipes(pipex, pipex->pipes, i, pipex->n_pips);
-	close_unused_files(i, pipex);
+	close_unused_pipes(pipex, pipex->pipes, i, gc);
+	close_unused_files(i, pipex, gc);
 	execute_cmd(pipex, i, gc);
 }
 
@@ -13,11 +13,7 @@ void	parent(t_pipex *pipex, t_node **gc)
 	int	status;
 	int	terminated_pid;
 
-	if (pipex->outfile_fd != -1)
-		close(pipex->outfile_fd);
-	if (pipex->infile_fd != -1)
-		close(pipex->infile_fd);
-	close_allthe_pipes(pipex, pipex->pipes);
+	close_allthe_pipes(pipex, pipex->pipes, gc);
 	i = 0;
 	while (i < pipex->n_cmds)
 	{

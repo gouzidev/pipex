@@ -12,11 +12,33 @@
 
 #include "pipex.h"
 
+void ft_close(int fd, t_node **gc)
+{
+	if (fd < 0)
+		return ;
+	int	r;
+
+	r = close(fd);
+	if (r == -1)
+	{
+		perror("close");
+		gc_clear(gc);
+		exit(1);
+	}
+}
+
 void read_hd(t_pipex *pipex, t_node **gc, int ac, char *av[])
 {
 	char	*line;
+	int		r;
 
-	pipe(pipex->here_doc_fd);
+	r = pipe(pipex->here_doc_fd);
+	if (r == -1)
+	{
+		gc_clear(gc);
+		perror("pipe");
+		exit(1);
+	}
 	line = get_next_line(0, gc);
 	while (ft_strcmp(line, ft_strjoin(av[2], "\n", gc)) != 0)
 	{
@@ -34,8 +56,9 @@ void	setup_hd(t_pipex *pipex, t_node **gc, int ac, char *av[])
 	pipex->pipes = init_pipes(pipex, gc, pipex->n_cmds);
 	pipex->pids = gc_malloc(gc, (pipex->n_cmds * sizeof(int)));
 	pipex->status = 0;
+	pipex->outfile_fd = -2;
 	read_hd(pipex, gc, ac, av);
-	dup2(pipex->here_doc_fd[0], pipex->infile_fd);
+	pipex->infile_fd = dup2(pipex->here_doc_fd[0], 0);
 }
 
 void	setup(t_pipex *pipex, t_node **gc, int ac, char *av[])
@@ -50,20 +73,24 @@ void	setup(t_pipex *pipex, t_node **gc, int ac, char *av[])
 	pipex->pids = gc_malloc(gc, (pipex->n_cmds * sizeof(int)));
 	pipex->status = 0;
 	pipex->infile_fd = open(av[1], O_RDONLY);
-	pipex->outfile_fd = open(av[ac - 1], O_WRONLY | O_CREAT | O_TRUNC, 0644);
-	handle_status(pipex, ac, av);
+	handle_infile(pipex, gc);
+	pipex->outfile_fd = -2;
+	pipex->here_doc_fd[0] = -2;
+	pipex->here_doc_fd[1] = -2;
 }
 
-void	handle_infile(t_pipex *pipex)
+void	handle_infile(t_pipex *pipex, t_node **gc)
 {
 	int	fd_null;
 
 	if (pipex->infile_fd == -1)
 	{
+		perror(pipex->infile);
 		fd_null = open("/dev/null", O_RDONLY);
 		if (fd_null == -1)
 		{
 			perror("open");
+			gc_clear(gc);
 			exit(1);
 		}
 		dup2(fd_null, 0);
@@ -71,20 +98,22 @@ void	handle_infile(t_pipex *pipex)
 	}
 }
 
-void	handle_status(t_pipex *pipex, int ac, char *av[])
+void	check_infile(t_pipex *pipex)
 {
 	if (pipex->infile_fd == -1)
 	{
-		if (access(av[1], F_OK) == -1)
-			perror(av[1]);
-		else if (access(av[1], R_OK) == -1)
-			perror(av[1]);
-		pipex->status = 1;
+		if (access(pipex->infile, F_OK) == -1)
+			perror(pipex->infile);
+		else if (access(pipex->infile, R_OK) == -1)
+			perror(pipex->infile);
 	}
+}
+
+void	check_outfile(t_pipex *pipex)
+{
 	if (pipex->outfile_fd == -1)
 	{
-		perror(av[ac - 1]);
-		pipex->status = 1;
+		perror(pipex->outfile);
 		exit(1);
 	}
 }
