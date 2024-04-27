@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   handle_bonus.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sgouzi <sgouzi@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/04/27 22:14:53 by sgouzi            #+#    #+#             */
+/*   Updated: 2024/04/27 22:15:13 by sgouzi           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "pipex_bonus.h"
 
 void	handle_cmd_path(t_pipex *pipex, int i, t_node **gc, char **cmd_args)
@@ -54,7 +66,8 @@ void	handle_dup(t_pipex *pipex, int i, t_node **gc)
 	}
 	else
 	{
-		pipex->outfile_fd = open(pipex->outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+		pipex->outfile_fd = open(pipex->outfile, O_WRONLY | O_CREAT | O_TRUNC,
+				0644);
 		check_outfile(pipex);
 		ft_dup2(pipex->outfile_fd, 1, gc);
 		ft_dup2(pipex->pipes[i - 1][0], 0, gc);

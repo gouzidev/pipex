@@ -1,23 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   helper.c                                           :+:      :+:    :+:   */
+/*   helper_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sgouzi <sgouzi@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 18:09:21 by sgouzi            #+#    #+#             */
-/*   Updated: 2024/04/25 13:44:48 by sgouzi           ###   ########.fr       */
+/*   Updated: 2024/04/27 22:16:09 by sgouzi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex_bonus.h"
 
-void ft_close(int fd, t_node **gc)
+void	ft_close(int fd, t_node **gc)
 {
-	if (fd < 0)
-		return ;
 	int	r;
 
+	if (fd < 0)
+		return ;
 	r = close(fd);
 	if (r == -1)
 	{
@@ -41,7 +41,7 @@ int	ft_dup2(int oldfd, int newfd, t_node **gc)
 	return (r);
 }
 
-void read_hd(t_pipex *pipex, t_node **gc, char *av[])
+void	read_hd(t_pipex *pipex, t_node **gc, char *av[])
 {
 	char	*line;
 	int		r;
@@ -64,7 +64,8 @@ void read_hd(t_pipex *pipex, t_node **gc, char *av[])
 void	check_n_setup(t_pipex *pipex, t_node **gc, int ac, char *av[])
 {
 	if (ac < 5)
-		(write(2, "usage: ./pipex file1 cmd1 cmd2 cmd3 ... cmdn file2\n", 52), exit(1));
+		(write(2, "usage: ./pipex file1 cmd1 cmd2 cmd3 ... cmdn file2\n", 52),
+			exit(1));
 	if (ft_strncmp(av[1], "here_doc", 9) == 0)
 		setup_hd(pipex, gc, ac, av);
 	else

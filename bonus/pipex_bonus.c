@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pipex.c                                            :+:      :+:    :+:   */
+/*   pipex_bonus.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sgouzi <sgouzi@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 18:09:28 by sgouzi            #+#    #+#             */
-/*   Updated: 2024/04/25 14:48:08 by sgouzi           ###   ########.fr       */
+/*   Updated: 2024/04/27 22:17:20 by sgouzi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@ char	**parse_commands(t_pipex *pipex, t_node **gc, int ac, char *av[])
 	pipex->n_pips = pipex->n_cmds - 1;
 	return (cmds);
 }
+
 void	execute_cmd(t_pipex *pipex, int i, t_node **gc)
 {
 	char	**cmd_args;
@@ -54,7 +55,8 @@ void	execute_cmd(t_pipex *pipex, int i, t_node **gc)
 		{
 			cmd_path = find_cmd_path(env_path, cmd_args[0], gc);
 			if (cmd_path)
-				(handle_dup(pipex, i, gc), execve(cmd_path, cmd_args, pipex->env));
+				(handle_dup(pipex, i, gc), execve(cmd_path, cmd_args,
+						pipex->env));
 			else
 				handle_unkown_cmd(cmd_args, gc);
 		}
@@ -64,6 +66,7 @@ void	execute_cmd(t_pipex *pipex, int i, t_node **gc)
 	else
 		handle_cmd_path(pipex, i, gc, cmd_args);
 }
+
 void	child(t_pipex *pipex, int i, t_node **gc)
 {
 	close_unused_pipes(pipex, i, gc);
@@ -71,6 +74,7 @@ void	child(t_pipex *pipex, int i, t_node **gc)
 	close_here_doc_fd(pipex, gc);
 	execute_cmd(pipex, i, gc);
 }
+
 void	parent(t_pipex *pipex, t_node **gc)
 {
 	int	i;
@@ -94,6 +98,7 @@ void	parent(t_pipex *pipex, t_node **gc)
 	gc_clear(gc);
 	exit(pipex->status);
 }
+
 int	main(int ac, char *av[], char *env[])
 {
 	struct s_pipex	pipex;
@@ -113,7 +118,7 @@ int	main(int ac, char *av[], char *env[])
 		else if (id == -1)
 			(gc_clear(&gc), perror("fork"), exit(1));
 		else
-			pipex.pids[i] = id;		
+			pipex.pids[i] = id;
 		i++;
 	}
 	parent(&pipex, &gc);

@@ -1,17 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pipex.h                                            :+:      :+:    :+:   */
+/*   pipex_bonus.h                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sgouzi <sgouzi@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 18:09:30 by sgouzi            #+#    #+#             */
-/*   Updated: 2024/04/24 23:34:00 by sgouzi           ###   ########.fr       */
+/*   Updated: 2024/04/27 22:17:29 by sgouzi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef PIPEX_H
-# define PIPEX_H
+#ifndef PIPEX_BONUS_H
+# define PIPEX_BONUS_H
 
 # include <errno.h>
 # include <fcntl.h>
@@ -43,7 +43,7 @@ typedef struct s_pipex
 	char			**env;
 	int				status;
 	int				is_here_doc;
-	int 			here_doc_fd[2];
+	int				here_doc_fd[2];
 
 }					t_pipex;
 
@@ -55,8 +55,8 @@ char				*ft_get_line(char *left_str, t_node **gc);
 char				*get_rest(char *left_str, t_node **gc);
 
 /* family.c */
-void	child(t_pipex *pipex, int i, t_node **gc);
-void	parent(t_pipex *pipex, t_node **gc);
+void				child(t_pipex *pipex, int i, t_node **gc);
+void				parent(t_pipex *pipex, t_node **gc);
 
 /* split.c */
 int					count_words(char const *s1, char c);
@@ -87,8 +87,10 @@ int					ft_strncmp(const char *s1, const char *s2, size_t n);
 
 /* pipe.c */
 int					**init_pipes(t_node **gc, int n_cmds);
-void				close_allthe_pipes(t_pipex *pipex, int **pipes, t_node **gc);
-void				close_unused_pipes(t_pipex *pipex, int process_index, t_node **gc);
+void				close_allthe_pipes(t_pipex *pipex, int **pipes,
+						t_node **gc);
+void				close_unused_pipes(t_pipex *pipex, int process_index,
+						t_node **gc);
 
 /* gc.c */
 void				*gc_malloc(t_node **gc, size_t size);
@@ -112,8 +114,9 @@ int					ft_dup2(int oldfd, int newfd, t_node **gc);
 /* */
 void				handle_here_doc(int ac, char *av[], char *env[],
 						t_node **gc);
-void	setup_hd(t_pipex *pipex, t_node **gc, int ac, char *av[]);
-void	check_n_setup(t_pipex *pipex, t_node **gc, int ac, char *av[]);
+void				setup_hd(t_pipex *pipex, t_node **gc, int ac, char *av[]);
+void				check_n_setup(t_pipex *pipex, t_node **gc, int ac,
+						char *av[]);
 
 void				ft_putstr(char *s, int *i);
 

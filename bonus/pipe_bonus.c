@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pipe.c                                             :+:      :+:    :+:   */
+/*   pipe_bonus.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sgouzi <sgouzi@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 18:09:27 by sgouzi            #+#    #+#             */
-/*   Updated: 2024/04/25 02:48:46 by sgouzi           ###   ########.fr       */
+/*   Updated: 2024/04/27 22:15:17 by sgouzi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ void	close_allthe_pipes(t_pipex *pipex, int **pipes, t_node **gc)
 	ft_close(pipex->infile_fd, gc);
 }
 
-void close_here_doc_fd(t_pipex *pipex, t_node **gc)
+void	close_here_doc_fd(t_pipex *pipex, t_node **gc)
 {
 	if (pipex->is_here_doc)
 	{
@@ -89,7 +89,7 @@ void	close_unused_pipes(t_pipex *pipex, int process_index, t_node **gc)
 	}
 }
 
-void close_unused_files(int i, t_pipex *pipex, t_node **gc)
+void	close_unused_files(int i, t_pipex *pipex, t_node **gc)
 {
 	if (i == 0)
 	{
@@ -107,4 +107,3 @@ void close_unused_files(int i, t_pipex *pipex, t_node **gc)
 			ft_close(pipex->outfile_fd, gc);
 	}
 }
-
