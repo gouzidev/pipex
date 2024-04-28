@@ -33,8 +33,6 @@ void	execute_cmd(t_pipex *pipex, int i, t_node **gc)
 	char	*env_path;
 	char	*cmd_path;
 
-	if (ft_strcmp(pipex->cmds[i], "") == 0)
-		(write(2, "permission denied: \n", 21), exit(126));
 	cmd_args = ft_split(pipex->cmds[i], ' ', gc);
 	if (!ft_strchr(cmd_args[0], '/'))
 	{
@@ -57,6 +55,7 @@ void	execute_cmd(t_pipex *pipex, int i, t_node **gc)
 
 void	child(t_pipex *pipex, int i, t_node **gc)
 {
+	check_before_run(pipex, i, gc);
 	close_unused_pipes(pipex, i, gc);
 	close_unused_files(i, pipex, gc);
 	execute_cmd(pipex, i, gc);
@@ -111,3 +110,6 @@ int	main(int ac, char *av[], char *env[])
 	parent(&pipex, &gc);
 	return (0);
 }
+
+// . as cmd
+// heredoc wrtite > 

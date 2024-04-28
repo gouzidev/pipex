@@ -53,21 +53,47 @@ void	read_hd(t_pipex *pipex, t_node **gc, char *av[])
 		perror("pipe");
 		exit(1);
 	}
+	write(1, "pipe heredoc> ", 15);
 	line = get_next_line(0, gc);
 	while (ft_strcmp(line, ft_strjoin(av[2], "\n", gc)) != 0)
 	{
 		write(pipex->here_doc_fd[1], line, len(line));
+		write(1, "pipe heredoc> ", 15);
 		line = get_next_line(0, gc);
+	}
+}
+void check_before_run(t_pipex *pipex, int i, t_node **gc)
+{
+	if (ft_strcmp(pipex->cmds[i], "") == 0)
+	{
+		write(2, "permission denied: \n", 21);
+		gc_clear(gc);
+		exit(126);
+	}
+	if (ft_strcmp(pipex->cmds[i], ".") == 0)
+	{
+		write(2, "not enough arguments: .\n", 25);
+		gc_clear(gc);
+		exit(1);
 	}
 }
 
 void	check_n_setup(t_pipex *pipex, t_node **gc, int ac, char *av[])
 {
-	if (ac < 5)
-		(write(2, "usage: ./pipex file1 cmd1 cmd2 cmd3 ... cmdn file2\n", 52),
-			exit(1));
 	if (ft_strncmp(av[1], "here_doc", 9) == 0)
-		setup_hd(pipex, gc, ac, av);
+	{
+		if (ac > 5)
+			setup_hd(pipex, gc, ac, av);
+		else
+			(write(2, "usage: ./pipex here_doc delim cmd1 cmd2 file\n", 46),
+			exit(1));
+	}
 	else
-		setup(pipex, gc, ac, av);
+	{
+		if (ac > 4)
+			setup(pipex, gc, ac, av);
+		else
+			(write(2, "usage: ./pipex file1 cmd1 cmd2 cmd3 ... cmdn file2\n", 52),
+			exit(1));
+	}
 }

@@ -68,6 +68,7 @@ void				check_outfile(t_pipex *pipex);
 void				setup(t_pipex *pipex, t_node **gc, int ac, char *av[]);
 void				read_hd(t_pipex *pipex, t_node **gc, char *av[]);
 void				ft_close(int fd, t_node **gc);
+void				check_before_run(t_pipex *pipex, int i, t_node **gc);
 
 /* pipex.c */
 int					main(int ac, char *av[], char *env[]);

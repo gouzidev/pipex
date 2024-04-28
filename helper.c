@@ -40,6 +40,21 @@ int	ft_dup2(int oldfd, int newfd, t_node **gc)
 	}
 	return (r);
 }
+void check_before_run(t_pipex *pipex, int i, t_node **gc)
+{
+	if (ft_strcmp(pipex->cmds[i], "") == 0)
+	{
+		write(2, "permission denied: \n", 21);
+		gc_clear(gc);
+		exit(126);
+	}
+	if (ft_strcmp(pipex->cmds[i], ".") == 0)
+	{
+		write(2, "not enough arguments: .\n", 25);
+		gc_clear(gc);
+		exit(1);
+	}
+}
 
 void	check_n_setup(t_pipex *pipex, t_node **gc, int ac, char *av[])
 {
