@@ -6,7 +6,7 @@
 /*   By: sgouzi <sgouzi@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/27 22:14:53 by sgouzi            #+#    #+#             */
-/*   Updated: 2024/04/27 22:39:46 by sgouzi           ###   ########.fr       */
+/*   Updated: 2024/04/28 01:11:33 by sgouzi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,8 @@ void	handle_cmd_path(t_pipex *pipex, int i, t_node **gc, char **cmd_args)
 	{
 		perror(cmd_args[0]);
 		gc_clear(gc);
+		if (errno == 13)
+			exit(126);
 		exit(127);
 	}
 	else if (access(cmd_args[0], X_OK) == -1)
@@ -47,7 +49,9 @@ void	handle_unset_path(t_pipex *pipex, int i, t_node **gc)
 
 void	handle_unkown_cmd(char **cmd_args, t_node **gc)
 {
-	perror(cmd_args[0]);
+	write(2, "command not found: ", 20);
+	write(2, cmd_args[0], len(cmd_args[0]));
+	write(2, "\n", 1);
 	gc_clear(gc);
 	exit(127);
 }

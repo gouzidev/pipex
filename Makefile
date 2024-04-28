@@ -4,7 +4,7 @@ CFLAGS = -Wall -Wextra -Werror
 
 NAME = pipex
 
-BNAME = pipex
+BNAME = pipex_bonus
 
 SRCS = pipex.c handle.c helper.c helper1.c split.c path.c str.c pipe.c gc.c gnl.c
 
@@ -14,16 +14,18 @@ BSRCS = ./bonus/pipex_bonus.c ./bonus/handle_bonus.c ./bonus/helper_bonus.c ./bo
 
 BOBJS = $(BSRCS:.c=.o)
 
-all: $(OBJS)
-	$(CC) $(CFLAGS) $^ -o $(NAME)
-	rm -rf $(OBJS)
-
-bonus: $(BOBJS)
-	$(CC) $(CFLAGS) $^ -o $(BNAME)
-	rm -rf $(BOBJS)
+all: $(NAME)
 
 %o: %c
 	$(CC) $(CFLAGS) -c $? -o $@
+
+$(NAME): $(OBJS)
+	$(CC) $(CFLAGS) $^ -o $(NAME)
+
+bonus: $(BNAME)
+
+$(BNAME): $(BOBJS)
+	$(CC) $(CFLAGS) $^ -o $(BNAME)
 
 re:	fclean all
 
