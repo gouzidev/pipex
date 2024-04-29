@@ -107,7 +107,7 @@ char				*find_cmd_path(char *env_path, char *cmd, t_node **gc);
 void				handle_cmd_path(t_pipex *pipex, int i, t_node **gc,
 						char **cmd_args);
 void				handle_unset_path(t_pipex *pipex, int i, t_node **gc);
-void				handle_unkown_cmd(char **cmd_args, t_node **gc);
+void				handle_unkown_cmd(char **cmd_args, int i, t_node **gc);
 void				handle_dup(t_pipex *pipex, int i, t_node **gc);
 void				execute_cmd(t_pipex *pipex, int i, t_node **gc);
 int					ft_dup2(int oldfd, int newfd, t_node **gc);

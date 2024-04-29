@@ -44,7 +44,6 @@ void	execute_cmd(t_pipex *pipex, int i, t_node **gc)
 	char	**cmd_args;
 	char	*env_path;
 	char	*cmd_path;
-
 	cmd_args = ft_split(pipex->cmds[i], ' ', gc);
 	if (!ft_strchr(cmd_args[0], '/'))
 	{
@@ -56,7 +55,7 @@ void	execute_cmd(t_pipex *pipex, int i, t_node **gc)
 				(handle_dup(pipex, i, gc), execve(cmd_path, cmd_args,
 						pipex->env));
 			else
-				handle_unkown_cmd(cmd_args, gc);
+				handle_unkown_cmd(cmd_args, i, gc);
 		}
 		else
 			handle_unset_path(pipex, i, gc);
