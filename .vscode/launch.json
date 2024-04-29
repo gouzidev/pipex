@@ -3,22 +3,11 @@
   "configurations": [
     {
       "name": "C/C++ Runner: Debug Session",
-      "type": "cppdbg",
+      "type": "lldb",
       "request": "launch",
-      "args": ["Makefile", ".", "wc", ".", "", "/dev/stdout"],
-      "stopAtEntry": true,
-      "externalConsole": false,
-      "cwd": "/home/sgouzi/Desktop/pipex",
-      "program": "/home/sgouzi/Desktop/pipex/pipex",
-      "MIMode": "gdb",
-      "miDebuggerPath": "gdb",
-      "setupCommands": [
-        {
-          "description": "Enable pretty-printing for gdb",
-          "text": "-enable-pretty-printing",
-          // "ignoreFailures": true
-        }
-      ]
+      "args": [],
+      "cwd": "/home/sgouzi/Desktop/pipex/bonus",
+      "program": "/home/sgouzi/Desktop/pipex/bonus/build/Debug/outDebug"
     }
   ]
 }

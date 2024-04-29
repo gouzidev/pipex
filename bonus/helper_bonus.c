@@ -80,12 +80,15 @@ void check_before_run(t_pipex *pipex, int i, t_node **gc)
 
 void	check_n_setup(t_pipex *pipex, t_node **gc, int ac, char *av[])
 {
+	if (ac < 5)
+		(write(2, "usage: ./pipex file1 cmd1 cmd2 cmd3 ... cmdn file2\n", 51),
+			exit(1));
 	if (ft_strncmp(av[1], "here_doc", 9) == 0)
 	{
 		if (ac > 5)
 			setup_hd(pipex, gc, ac, av);
 		else
-			(write(2, "usage: ./pipex here_doc delim cmd1 cmd2 file\n", 46),
+			(write(2, "usage: ./pipex here_doc delim cmd1 cmd2 file\n", 45),
 			exit(1));
 	}
 	else
@@ -93,7 +96,7 @@ void	check_n_setup(t_pipex *pipex, t_node **gc, int ac, char *av[])
 		if (ac > 4)
 			setup(pipex, gc, ac, av);
 		else
-			(write(2, "usage: ./pipex file1 cmd1 cmd2 cmd3 ... cmdn file2\n", 52),
+			(write(2, "usage: ./pipex file1 cmd1 cmd2 cmd3 ... cmdn file2\n", 51),
 			exit(1));
 	}
 }
