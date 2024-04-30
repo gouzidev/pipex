@@ -33,6 +33,8 @@ char	*find_cmd_path(char *env_path, char *cmd, t_node **gc)
 	char	*full_path;
 	char	*temp;
 
+	if (ft_strncmp(cmd, ".", 1) == 0)
+		return (cmd);
 	paths = ft_split(env_path, ':', gc);
 	if (paths == NULL)
 		perror("malloc");
@@ -49,5 +51,5 @@ char	*find_cmd_path(char *env_path, char *cmd, t_node **gc)
 			return (full_path);
 		i++;
 	}
-	return (NULL);
+	return (cmd);
 }

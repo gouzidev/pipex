@@ -64,14 +64,12 @@ char				**handle_null_malloc(char const *s, char c, t_node **gc);
 char				**ft_split(char const *s, char c, t_node **gc);
 
 /* helper.c */
-void				handle_infile(t_pipex *pipex, t_node **gc);
-void				check_infile(t_pipex *pipex);
-void				check_outfile(t_pipex *pipex);
+void				check_infile(t_pipex *pipex, t_node **gc);
+void				check_outfile(t_pipex *pipex, t_node **gc);
 void				setup(t_pipex *pipex, t_node **gc, int ac, char *av[]);
 void				read_hd(t_pipex *pipex, t_node **gc, char *av[]);
 void				ft_close(int fd, t_node **gc);
 void				close_here_doc_fd(t_pipex *pipex, t_node **gc);
-void				check_before_run(t_pipex *pipex, int i, t_node **gc);
 /* pipex.c */
 int					main(int ac, char *av[], char *env[]);
 char				**parse_commands(t_pipex *pipex, t_node **gc, int ac,
@@ -104,10 +102,6 @@ char				*get_env_path(char *env[]);
 char				*find_cmd_path(char *env_path, char *cmd, t_node **gc);
 
 /* exec.c */
-void				handle_cmd_path(t_pipex *pipex, int i, t_node **gc,
-						char **cmd_args);
-void				handle_unset_path(t_pipex *pipex, int i, t_node **gc);
-void				handle_unkown_cmd(char **cmd_args, int i, t_node **gc);
 void				handle_dup(t_pipex *pipex, int i, t_node **gc);
 void				execute_cmd(t_pipex *pipex, int i, t_node **gc);
 int					ft_dup2(int oldfd, int newfd, t_node **gc);

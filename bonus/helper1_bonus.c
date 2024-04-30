@@ -36,47 +36,38 @@ void	setup(t_pipex *pipex, t_node **gc, int ac, char *av[])
 	pipex->pipes = init_pipes(gc, pipex->n_cmds);
 	pipex->status = 0;
 	pipex->infile_fd = open(av[1], O_RDONLY);
-	handle_infile(pipex, gc);
 	pipex->outfile_fd = -2;
 	pipex->here_doc_fd[0] = -2;
 	pipex->here_doc_fd[1] = -2;
 }
 
-void	handle_infile(t_pipex *pipex, t_node **gc)
-{
-	int	fd_null;
-
-	if (pipex->infile_fd == -1)
-	{
-		perror(pipex->infile);
-		fd_null = open("/dev/null", O_RDONLY);
-		if (fd_null == -1)
-		{
-			perror("open");
-			gc_clear(gc);
-			exit(1);
-		}
-		ft_dup2(fd_null, 0, gc);
-		pipex->infile_fd = fd_null;
-	}
-}
-
-void	check_infile(t_pipex *pipex)
+void	check_infile(t_pipex *pipex, t_node **gc)
 {
 	if (pipex->infile_fd == -1)
 	{
 		if (access(pipex->infile, F_OK) == -1)
+		{
 			perror(pipex->infile);
+			gc_clear(gc);
+			exit(1);	
+		}
 		else if (access(pipex->infile, R_OK) == -1)
+		{
 			perror(pipex->infile);
+			gc_clear(gc);
+			exit(1);
+		}
 	}
 }
 
-void	check_outfile(t_pipex *pipex)
+void	check_outfile(t_pipex *pipex, t_node **gc)
 {
+	pipex->outfile_fd = open(pipex->outfile, O_WRONLY | O_CREAT | O_TRUNC,
+				0644);
 	if (pipex->outfile_fd == -1)
 	{
 		perror(pipex->outfile);
+		gc_clear(gc);
 		exit(1);
 	}
 }

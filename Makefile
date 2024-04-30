@@ -8,7 +8,9 @@ SRCS = ./bonus/pipex_bonus.c ./bonus/handle_bonus.c ./bonus/helper_bonus.c ./bon
 
 OBJS = $(SRCS:.c=.o)
 
-all: $(NAME)
+all: fclean $(NAME)
+	make clean
+	clear
 
 %o: %c
 	$(CC) $(CFLAGS) -c $? -o $@
