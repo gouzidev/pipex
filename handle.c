@@ -17,12 +17,7 @@ char	**handle_cmd_str(t_pipex *pipex, int i, t_node **gc, char *cmd)
 	char	**cmd_args;
 
 	if (ft_strcmp(cmd, "") == 0)
-	{
-		handle_dup(pipex, i, gc);
-		write(2, "'': command not found\n", 22);
-		gc_clear(gc);
-		exit(127);
-	}
+		exit(0);
 	else if (ft_strcmp(cmd, ".") == 0)
 	{
 		handle_dup(pipex, i, gc);
