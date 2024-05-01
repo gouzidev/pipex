@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pipex_bonus.h                                      :+:      :+:    :+:   */
+/*   pipex.h                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sgouzi <sgouzi@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -10,8 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef PIPEX_BONUS_H
-# define PIPEX_BONUS_H
+#ifndef PIPEX_H
+# define PIPEX_H
 
 # include <errno.h>
 # include <fcntl.h>
@@ -42,9 +42,6 @@ typedef struct s_pipex
 	char			**cmds;
 	char			**env;
 	int				status;
-	int				is_here_doc;
-	int				here_doc_fd[2];
-
 }					t_pipex;
 
 /* gnl */
