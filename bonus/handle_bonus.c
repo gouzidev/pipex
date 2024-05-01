@@ -65,7 +65,6 @@ void	handle_cmd_path(t_pipex *pipex, int i, t_node **gc, char **cmd_args)
 void	handle_fail(t_pipex *pipex, int i, t_node **gc, char **cmd_args)
 {
 	handle_dup(pipex, i, gc);
-	execve(cmd_args[0], cmd_args, pipex->env);
 	write(2, cmd_args[0], len(cmd_args[0]));
 	write(2, ": command not found\n", 21);
 	gc_clear(gc);
