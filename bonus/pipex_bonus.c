@@ -39,21 +39,23 @@ char	**parse_commands(t_pipex *pipex, t_node **gc, int ac, char *av[])
 	return (cmds);
 }
 
-char	**handle_cmd_str(t_node **gc, char *cmd)
+char	**handle_cmd_str(t_pipex *pipex, int	i, t_node **gc, char *cmd)
 {
 	char **cmd_args;
 
 	if (ft_strcmp(cmd, "") == 0)
 	{
+		handle_dup(pipex, i, gc);
 		write(2, "'': command not found\n", 22);
 		gc_clear(gc);
 		exit(127);
 	}
 	else if (ft_strcmp(cmd, ".") == 0)
 	{
+		handle_dup(pipex, i, gc);
 		write(2, ".: filename argument required\n", 30);
 		gc_clear(gc);
-		exit(127);
+		exit(2);
 	}
 	else
 		cmd_args = ft_split(cmd, ' ', gc);
@@ -86,30 +88,59 @@ void handle_no_path(t_pipex *pipex, int i, t_node **gc, char **cmd_args)
 void handle_cmd_path(t_pipex *pipex, int i, t_node **gc, char **cmd_args)
 {
 	handle_dup(pipex, i, gc);
+	if (access(cmd_args[0], F_OK) == -1)
+	{
+		perror(cmd_args[0]);
+		gc_clear(gc);
+		exit(127);
+	}
+	else if (access(cmd_args[0], X_OK) == -1)
+	{
+		perror(cmd_args[0]);
+		gc_clear(gc);
+		exit(126);
+	}
+	else
+	{
+		execve(cmd_args[0], cmd_args, pipex->env);
+		perror(cmd_args[0]);
+		gc_clear(gc);
+		exit(127);
+	}
 	execve(cmd_args[0], cmd_args, pipex->env);
 	perror(cmd_args[0]);
 	gc_clear(gc);
 	exit(127);
 }
 
+void handle_fail(t_node **gc, char **cmd_args)
+{
+	write(2, cmd_args[0], len(cmd_args[0]));
+	write(2, ": command not found\n", 21);
+	gc_clear(gc);
+	exit(127);
+}
 
 void	execute_cmd(t_pipex *pipex, int i, t_node **gc)
 {
 	char	**cmd_args;
 	char	*env_path;
 	char	*cmd_path;
-	cmd_args = handle_cmd_str(gc, pipex->cmds[i]);
-	if (!ft_strchr(pipex->cmds[i], '/')) // if the command is not a path
+	cmd_args = handle_cmd_str(pipex, i, gc, pipex->cmds[i]);
+	if (!ft_strchr(pipex->cmds[i], '/'))
 	{
 		env_path = get_env_path(pipex->env);
 		if (env_path)
 		{
 			cmd_path = find_cmd_path(env_path, cmd_args[0], gc);
-			handle_dup(pipex, i, gc);
-			execve(cmd_path, cmd_args, pipex->env);
-			perror(cmd_args[0]);
-			gc_clear(gc);
-			exit(127);
+			if (!cmd_path)
+				handle_fail(gc, cmd_args);
+			else
+			{
+				handle_dup(pipex, i, gc);
+				execve(cmd_path, cmd_args, pipex->env);
+				handle_fail(gc, cmd_args);
+			}
 		}
 		else
 			handle_no_path(pipex, i, gc, cmd_args);

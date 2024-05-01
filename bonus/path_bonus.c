@@ -51,5 +51,5 @@ char	*find_cmd_path(char *env_path, char *cmd, t_node **gc)
 			return (full_path);
 		i++;
 	}
-	return (cmd);
+	return (NULL);
 }
