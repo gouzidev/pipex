@@ -58,9 +58,9 @@ char	**handle_null_malloc(char const *s, char *sep, t_node **gc)
 	return (res);
 }
 
-int is_sep(char c, char *sep)
+int	is_sep(char c, char *sep)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (sep[i])
