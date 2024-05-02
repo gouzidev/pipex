@@ -12,16 +12,16 @@
 
 #include "pipex.h"
 
-char **handle_cmd_str(t_pipex *pipex, int i, t_node **gc, char *cmd)
+char	**handle_cmd_str(t_pipex *pipex, int i, t_node **gc, char *cmd)
 {
-	char **cmd_args;
+	char	**cmd_args;
 
 	if (ft_strcmp(cmd, "") == 0)
 	{
-		if (i == 0 && ft_strcmp(pipex->infile, "") == 0)
-			(write(2, "No such file or directory\n", 26), gc_clear(gc), exit(0));
-		else if (i == pipex->n_cmds - 1 && ft_strcmp(pipex->outfile, "") == 0)
-			(write(2, "No such file or directory\n", 26), gc_clear(gc), exit(1));
+		if (i == 0)
+			check_infile(pipex, gc);
+		else if (i == pipex->n_cmds - 1)
+			check_outfile(pipex, gc);
 		gc_clear(gc);
 		exit(0);
 	}
@@ -32,12 +32,11 @@ char **handle_cmd_str(t_pipex *pipex, int i, t_node **gc, char *cmd)
 		gc_clear(gc);
 		exit(2);
 	}
-	else
-		cmd_args = ft_split(cmd, " \t\n\v\f\r", gc);
+	cmd_args = ft_split(cmd, " \t\n\v\f\r", gc);
 	return (cmd_args);
 }
 
-void handle_no_path(t_pipex *pipex, int i, t_node **gc, char **cmd_args)
+void	handle_no_path(t_pipex *pipex, int i, t_node **gc, char **cmd_args)
 {
 	handle_dup(pipex, i, gc);
 	if (access(cmd_args[0], F_OK) == -1)
@@ -52,7 +51,7 @@ void handle_no_path(t_pipex *pipex, int i, t_node **gc, char **cmd_args)
 	}
 }
 
-void handle_cmd_path(t_pipex *pipex, int i, t_node **gc, char **cmd_args)
+void	handle_cmd_path(t_pipex *pipex, int i, t_node **gc, char **cmd_args)
 {
 	handle_dup(pipex, i, gc);
 	if (access(cmd_args[0], F_OK) == -1)
@@ -69,7 +68,7 @@ void handle_cmd_path(t_pipex *pipex, int i, t_node **gc, char **cmd_args)
 	}
 }
 
-void handle_fail(t_pipex *pipex, int i, t_node **gc, char **cmd_args)
+void	handle_fail(t_pipex *pipex, int i, t_node **gc, char **cmd_args)
 {
 	handle_dup(pipex, i, gc);
 	execve(cmd_args[0], cmd_args, pipex->env);
@@ -79,7 +78,7 @@ void handle_fail(t_pipex *pipex, int i, t_node **gc, char **cmd_args)
 	exit(127);
 }
 
-void handle_dup(t_pipex *pipex, int i, t_node **gc)
+void	handle_dup(t_pipex *pipex, int i, t_node **gc)
 {
 	if (i == 0)
 	{

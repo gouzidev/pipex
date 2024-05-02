@@ -28,8 +28,7 @@ void	check_infile(t_pipex *pipex, t_node **gc)
 {
 	if (ft_strcmp(pipex->infile, "") == 0)
 	{
-		printf("pipex: %s: No such file or directory\n", pipex->infile);
-		perror(pipex->infile);
+		write(2, "No such file or directory\n", 26);
 		gc_clear(gc);
 		exit(1);
 	}
@@ -54,7 +53,7 @@ void	check_outfile(t_pipex *pipex, t_node **gc)
 {
 	if (ft_strcmp(pipex->outfile, "") == 0)
 	{
-		perror(pipex->infile);
+		write(2, "No such file or directory\n", 26);
 		gc_clear(gc);
 		exit(1);
 	}

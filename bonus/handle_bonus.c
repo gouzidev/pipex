@@ -18,10 +18,12 @@ char	**handle_cmd_str(t_pipex *pipex, int i, t_node **gc, char *cmd)
 
 	if (ft_strcmp(cmd, "") == 0)
 	{
-		if (ft_strcmp(pipex->infile, "") == 0)
-			perror(pipex->infile);
-		exit(0);
+		if (i == 0)
+			check_infile(pipex, gc);
+		else if (i == pipex->n_cmds - 1)
+			check_outfile(pipex, gc);
 		gc_clear(gc);
+		exit(0);
 	}
 	else if (ft_strcmp(cmd, ".") == 0)
 	{
@@ -30,8 +32,7 @@ char	**handle_cmd_str(t_pipex *pipex, int i, t_node **gc, char *cmd)
 		gc_clear(gc);
 		exit(2);
 	}
-	else
-		cmd_args = ft_split(cmd, " \t\n\v\f\r", gc);
+	cmd_args = ft_split(cmd, " \t\n\v\f\r", gc);
 	return (cmd_args);
 }
 
@@ -70,6 +71,7 @@ void	handle_cmd_path(t_pipex *pipex, int i, t_node **gc, char **cmd_args)
 void	handle_fail(t_pipex *pipex, int i, t_node **gc, char **cmd_args)
 {
 	handle_dup(pipex, i, gc);
+	execve(cmd_args[0], cmd_args, pipex->env);
 	write(2, cmd_args[0], len(cmd_args[0]));
 	write(2, ": command not found\n", 21);
 	gc_clear(gc);

@@ -65,7 +65,6 @@ int					is_sep(char c, char *sep);
 void				check_infile(t_pipex *pipex, t_node **gc);
 void				check_outfile(t_pipex *pipex, t_node **gc);
 void				setup(t_pipex *pipex, t_node **gc, int ac, char *av[]);
-void				read_hd(t_pipex *pipex, t_node **gc, char *av[]);
 void				ft_close(int fd, t_node **gc);
 void				close_here_doc_fd(t_pipex *pipex, t_node **gc);
 void				perror_clear_exit(char *str, t_node **gc, int exit_code);
@@ -117,10 +116,8 @@ int					ft_dup2(int oldfd, int newfd, t_node **gc);
 /* */
 void				handle_here_doc(int ac, char *av[], char *env[],
 						t_node **gc);
-void				setup_hd(t_pipex *pipex, t_node **gc, int ac, char *av[]);
 void				check_n_setup(t_pipex *pipex, t_node **gc, int ac,
 						char *av[]);
-
 void				ft_putstr(char *s, int *i);
 
 #endif
