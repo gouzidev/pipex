@@ -26,6 +26,13 @@ void	setup(t_pipex *pipex, t_node **gc, int ac, char *av[])
 
 void	check_infile(t_pipex *pipex, t_node **gc)
 {
+	if (ft_strcmp(pipex->infile, "") == 0)
+	{
+		printf("pipex: %s: No such file or directory\n", pipex->infile);
+		perror(pipex->infile);
+		gc_clear(gc);
+		exit(1);
+	}
 	if (pipex->infile_fd == -1)
 	{
 		if (access(pipex->infile, F_OK) == -1)
@@ -45,6 +52,12 @@ void	check_infile(t_pipex *pipex, t_node **gc)
 
 void	check_outfile(t_pipex *pipex, t_node **gc)
 {
+	if (ft_strcmp(pipex->outfile, "") == 0)
+	{
+		perror(pipex->infile);
+		gc_clear(gc);
+		exit(1);
+	}
 	pipex->outfile_fd = open(pipex->outfile, O_WRONLY | O_CREAT | O_TRUNC,
 			0644);
 	if (pipex->outfile_fd == -1)

@@ -73,7 +73,7 @@ char	*ft_strjoin(char *s1, char *s2, t_node **gc)
 		return (NULL);
 	output = (char *)gc_malloc(gc, (len(s1) + len(s2) + 1) * sizeof(char));
 	if (output == NULL)
-		(gc_clear(gc), exit(1));
+		(gc_clear(gc), perror("malloc"), exit(1));
 	i = 0;
 	while (i < len(s1))
 	{

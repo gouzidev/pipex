@@ -45,7 +45,7 @@ char	*ft_strjoin_gnl(char *str, char *buff, t_node **gc)
 		return (NULL);
 	res = gc_malloc(gc, sizeof(char) * ((len(str) + len(buff)) + 1));
 	if (res == NULL)
-		(gc_clear(gc), exit(1));
+		(gc_clear(gc), perror("malloc"), exit(1));
 	i = -1;
 	j = 0;
 	if (str)
@@ -71,7 +71,7 @@ char	*ft_get_line(char *str, t_node **gc)
 		i++;
 	line = (char *)gc_malloc(gc, sizeof(char) * (i + 1));
 	if (!line)
-		(gc_clear(gc), exit(1));
+		(gc_clear(gc), perror("malloc"), exit(1));
 	i = -1;
 	while (++i >= 0 && str[i] && str[i] != '\n')
 		line[i] = str[i];
